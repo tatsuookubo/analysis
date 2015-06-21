@@ -110,7 +110,7 @@ for i = 1:numRois
         
         % Save
         fileStem = char(regexp(metaFiles(1).name,'.*(?=trial)','match'));
-        saveFileName{figCount} = [saveFolder,fileStem,'block',num2str(m,'%03d'),'stim',num2str(k,'%03d'),'.pdf'];
+        saveFileName{figCount} = [saveFolder,fileStem,'block',num2str(m,'%03d'),'_stim',num2str(k,'%03d'),'.pdf'];
         mySave(saveFileName{figCount});
     end
     
