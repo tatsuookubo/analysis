@@ -1,5 +1,8 @@
 function roiCorr(mov,startFrame,endFrame,varargin)
 
+% Plots the correlation of pixels with the mean fluorescence trace from the
+% first ROI you draw with clicky.
+
 %% Set start and end frame 
 if ~exist('startFrame','var')
     startFrame = 1; 

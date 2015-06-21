@@ -1,6 +1,8 @@
 % Post-hoc 2P analysis
 % with blocks
 
+% Plots data if ROIs were already drawn during experiment
+
 close all
 clear all
 

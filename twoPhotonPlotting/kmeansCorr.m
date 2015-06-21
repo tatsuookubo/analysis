@@ -1,5 +1,8 @@
 function kmeansCorr(mov,frameRate,k)
 
+% Clusters pixels in movie into k clusters based on how correlated pixels
+% are over time
+
 %% Remove pixels that have low std 
 kmat = reshape(mov, [size(mov,1)*size(mov,2) size(mov,3)] );
 stds = std(kmat,0,2);

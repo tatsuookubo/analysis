@@ -1,5 +1,7 @@
 % meta2pAnalysis.m
 
+% Meta script to easily allow you to run different analysis functions.  Run load movie first then run any of the other functions.  
+
 %% Load movie 
 [greenMov,redMov,frameRate] = loadMovie('n');
 

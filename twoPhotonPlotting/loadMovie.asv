@@ -1,6 +1,7 @@
 function [greenMov,redMov,frameRate] = loadMovie(play,imageFileName,metaFileName,varargin)
 
 % Loads movie 
+% 
 
 %% Get filenames if not provided 
 if ~exist('metaFileName','var')
