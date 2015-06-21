@@ -1,8 +1,0 @@
-function mySave(filename)
-
-    saveFilename{n} = [saveFolder,'\GroupData_Stim',num2str(n),'.pdf'];
-    set(gcf, 'PaperType', 'usletter');
-    orient landscape
-    export_fig(saveFilename{n},'-pdf','-q50')
-    imageFilename = [imageFolder,'stimNum_',num2str(n),'.emf'];
-    print(fig,'-dmeta',imageFilename)
