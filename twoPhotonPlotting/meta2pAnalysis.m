@@ -3,12 +3,12 @@
 % Meta script to easily allow you to run different analysis functions.  Run load movie first then run any of the other functions.  
 
 %% Load movie 
-[greenMov,redMov,frameRate] = loadMovie('n');
+[greenMov,redMov,frameRate,metaFileName,frameTimes] = loadMovie('n');
 
-mov = greenMov;
+load(metaFileName)
 
 %% Clicky
-clicky(mov)
+clicky(greenMov,redMov,Stim,frameTimes)
 
 %% Clicky correlation 
 roiCorr(mov)

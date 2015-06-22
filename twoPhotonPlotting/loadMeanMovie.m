@@ -1,7 +1,6 @@
-function [greenMov,redMov,frameRate] = loadMovie(play,imageFileName,metaFileName,varargin)
+function [greenMov,redMov,frameRate,metaFileName,frameTimes] = loadMeanMovie(play,imageFileName,metaFileName,varargin)
 
 % Loads movie 
-% 
 
 %% Get filenames if not provided 
 if ~exist('metaFileName','var')
@@ -43,7 +42,7 @@ mov(64,:,:,:)=[];
 
 %% Separate channels
 greenMov = squeeze(mov(:,:,2,:));
-redMov = squeeze(mov(:,:,2,:));
+redMov = squeeze(mov(:,:,1,:));
 
 %% Find max and min values of images 
 limits(1) = min(greenMov(:));
@@ -53,3 +52,20 @@ limits(2) = max(greenMov(:));
 if strcmp(play,'y')
     ImplayWithMap(greenMov, frameRate, limits)
 end
+
+%% Get frame timing data 
+% find(max(data.yMirror),'first',1))
+% sampsPerFrame = round(length(Stim.stimulus)/(numFrames + 1));
+sampsPerFrame = 1/frameRate * Stim.sampleRate;
+frameDivisions = round(0.5*sampsPerFrame + sampsPerFrame.*(0:numFrames));
+for i = 1:numFrames
+    if i == numFrames
+        yMirrorSubset = data.yMirror(frameDivisions(i):end);
+    else 
+        yMirrorSubset = data.yMirror(frameDivisions(i):frameDivisions(i+1));
+    end
+    [~,maxIdx] = max(yMirrorSubset);
+    frameEndIdxs(i) = frameDivisions(i) + maxIdx - 1;
+end
+
+frameTimes = Stim.timeVec(frameEndIdxs);
