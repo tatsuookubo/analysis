@@ -1,4 +1,4 @@
-function [roi_points, greenCountMat, redCountMat] = clickyMult(greenMov,redMov, Stim, frameTimes, sumTitle,metaFileName,varargin)
+function [roi_points, greenCountMat, redCountMat] = clickyMult(greenMov,redMov, Stim, frameTimes,metaFileName,varargin)
 
 % Lets you select ROIS by left clicking to make a shape then right clicking
 % to finish that shape.
@@ -6,19 +6,30 @@ function [roi_points, greenCountMat, redCountMat] = clickyMult(greenMov,redMov, 
 % You can select mutliple ROIs.
 % A second right click prevents stops further ROIs from being drawn.
 
-%% Get mean movies 
-meanGreenMov = mean(greenMov,4);  
-meanRedMov = mean(redMov,4); 
+%% Calculate title
+[pathName] = fileparts(metaFileName);
+cd(pathName)
+exptInfoFile = dir('*exptInfo.mat');
+load(exptInfoFile.name)
+dateNumber = datenum(exptInfo.dNum,'yymmdd');
+dateAsString = datestr(dateNumber,'mm-dd-yy');
+sumTitle = [dateAsString,', ',exptInfo.prefixCode,', ','ExpNum ',num2str(exptInfo.expNum),', FlyNum ',num2str(exptInfo.flyNum),...
+    ', RoiNum ',num2str(i),', BlockNum ',num2str(k)];
+   
+
+%% Get mean movies
+meanGreenMov = mean(greenMov,4);
+meanRedMov = mean(redMov,4);
 
 %% Plot reference image
 refimg = mean(meanGreenMov, 3);
 
 figure
-setCurrentFigurePosition(1) 
+setCurrentFigurePosition(1)
 subplot(2,2,1)
 imshow(refimg, [], 'InitialMagnification', 'fit')
 hold on;
-title('Mean image')
+title(sumTitle, 'Position', [0 1], 'HorizontalAlignment', 'left');
 
 %% Get image details
 nframes = size(meanGreenMov, 3);
@@ -38,7 +49,7 @@ nroi = 1;
 greenCountMat = [];
 redCountMat = [];
 [x, y] = meshgrid(1:xsize, 1:ysize);
-numTrials = size(greenMov,4); 
+numTrials = size(greenMov,4);
 while(npts > 0)
     
     % Draw the ROI
@@ -77,7 +88,7 @@ while(npts > 0)
     % Plot the green trace
     subplot(2,2,4)
     myplot(frameTimes,meanGreenFCount,'Color',currcolor,'Linewidth',2);
-    hold on 
+    hold on
     myplot(frameTimes,greenFCount,'Color',currcolor,'Linewidth',1,'LineStyle','--');
     colorindex = colorindex+1;
     ylabel('F count')
@@ -94,11 +105,8 @@ while(npts > 0)
     xlabel('Time (s)')
     title('Red channel')
     
-    % Figure formatting and add title 
-    spaceplots    
-    if exist('sumTitle','var')  
-        suptitle(sumTitle)
-    end    
+    % Figure formatting and add title
+    spaceplots
     set(gca,'FontName','Calibri')
     
     % Store the rois
@@ -107,10 +115,8 @@ while(npts > 0)
 end
 
 %% Save Figure
-[pathName] = fileparts(metaFileName); 
-fileNameStem = char(regexp(pathName,'.*(?=roi)','match'));
 saveFolder = [fileNameStem,'OnlineFigures\'];
 fileStem = char(regexp(metaFiles(1).name,'.*(?=trial)','match'));
-saveFileName{figCount} = [saveFolder,fileStem,'.pdf'];   
+saveFileName{figCount} = [saveFolder,fileStem,'.pdf'];
 mySave(saveFileName);
 
