@@ -1,4 +1,4 @@
-function [greenMov,redMov,frameRate,metaFileName,frameTimes] = loadMeanMovie(play,imageFileName,metaFileName,varargin)
+function [greenMov,redMov,frameRate,metaFileName,frameTimes] = loadMeanMovie(metaFileName,varargin)
 
 % Loads movie 
 
@@ -6,11 +6,15 @@ function [greenMov,redMov,frameRate,metaFileName,frameTimes] = loadMeanMovie(pla
 if ~exist('metaFileName','var')
     [fileName, pathName] = uigetfile;
     metaFileName = fullfile(pathName,fileName);
+else 
+    pathName = fileparts(metaFileName); 
 end
-if ~exist('imageFileName','var')
-    fileNameStem = char(regexp(metaFileName,'.*(?=.mat)','match'));
-    imageFileName = [fileNameStem,'_image.tif'];
-end
+fileNameStem = char(regexp(metaFileName,'.*(?=.mat)','match'));
+imageFileName = [fileNameStem,'_image.tif'];
+
+cd(pathName)
+imageFiles = dir('*.tif');
+numMovies = length(imageFiles); 
 
 %% Load meta data 
 load(metaFileName);
@@ -27,31 +31,24 @@ numFrames = round(length(imInfo)/numChans);
 im1 = imread(imageFileName,'tiff','Index',1,'Info',imInfo);
 numPx = size(im1);
 
-% Read in image
-mov = zeros([numPx(:); numChans; numFrames]', 'double');  %preallocate 3-D array
-for frame=1:numFrames
-    for chan = 1:numChans
-        [mov(:,:,chan,frame)] = imread(imageFileName,'tiff',...
-            'Index',(2*(frame-1)+chan),'Info',imInfo);
+%% Read in image
+mov = zeros([numPx(:); numChans; numFrames; numMovies]', 'double');  %preallocate 3-D array
+for movNum = 1:numMovies
+    for frame=1:numFrames
+        for chan = 1:numChans
+            [mov(:,:,chan,frame,movNum)] = imread(fullfile(pathName,imageFiles(movNum).name),'tiff',...
+                'Index',(2*(frame-1)+chan),'Info',imInfo);
+        end
     end
 end
 
 %% Image processing
 % Remove the last line where the image doesn't change
-mov(64,:,:,:)=[];
+mov(64,:,:,:,:)=[];
 
 %% Separate channels
-greenMov = squeeze(mov(:,:,2,:));
-redMov = squeeze(mov(:,:,1,:));
-
-%% Find max and min values of images 
-limits(1) = min(greenMov(:));
-limits(2) = max(greenMov(:)); 
-
-%% Play movies 
-if strcmp(play,'y')
-    ImplayWithMap(greenMov, frameRate, limits)
-end
+greenMov = squeeze(mov(:,:,2,:,:));
+redMov = squeeze(mov(:,:,1,:,:));
 
 %% Get frame timing data 
 % find(max(data.yMirror),'first',1))
@@ -69,3 +66,4 @@ for i = 1:numFrames
 end
 
 frameTimes = Stim.timeVec(frameEndIdxs);
+
