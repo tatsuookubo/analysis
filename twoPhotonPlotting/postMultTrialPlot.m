@@ -14,5 +14,5 @@ onlinePlot.frameTime = frameTimes;
 
 [pathName, fileName] = fileparts(metaFileName); 
 fileNameStem = char(regexp(fileName,'.*(?=_trial)','match'));
-saveFileName = [pathName,fileNameStem,'_onlinePlotData.mat'];
-save(saveFileName,'onlinePlot','-append')
+saveFileName = [pathName,'\',fileNameStem,'_onlinePlotData.mat'];
+save(saveFileName,'onlinePlot')

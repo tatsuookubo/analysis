@@ -7,15 +7,18 @@ function [roi_points, greenCountMat, redCountMat] = clickyMult(greenMov,redMov, 
 % A second right click prevents stops further ROIs from being drawn.
 
 %% Calculate title
-[pathName] = fileparts(metaFileName);
-cd(pathName)
+[pathName,fileName] = fileparts(metaFileName);
+flyPath = char(regexp(pathName,'.*(?=\\roi)','match'));
+cd(flyPath)
 exptInfoFile = dir('*exptInfo.mat');
 load(exptInfoFile.name)
 dateNumber = datenum(exptInfo.dNum,'yymmdd');
 dateAsString = datestr(dateNumber,'mm-dd-yy');
+roiNum = getpref('scimSavePrefs','roiNum');
+blockNum = getpref('scimSavePrefs','blockNum');
 sumTitle = [dateAsString,', ',exptInfo.prefixCode,', ','ExpNum ',num2str(exptInfo.expNum),', FlyNum ',num2str(exptInfo.flyNum),...
-    ', RoiNum ',num2str(i),', BlockNum ',num2str(k)];
-   
+    ', RoiNum ',num2str(roiNum),', BlockNum ',num2str(blockNum)];
+
 
 %% Get mean movies
 meanGreenMov = mean(greenMov,4);
@@ -46,8 +49,8 @@ purple = [97 69 168]./255;
 %% Get ROIs
 npts = 1;
 nroi = 1;
-greenCountMat = [];
-redCountMat = [];
+greenCountMat = {};
+redCountMat = {};
 [x, y] = meshgrid(1:xsize, 1:ysize);
 numTrials = size(greenMov,4);
 while(npts > 0)
@@ -72,10 +75,11 @@ while(npts > 0)
     for i = 1:numTrials
         greenFCount(i,:) = squeeze(sum(sum(squeeze(greenMov(:,:,:,i)).*repmat(inpoly, [1, 1, nframes]))))/sum(inpoly(:));
         redFCount(i,:) = squeeze(sum(sum(squeeze(redMov(:,:,:,i)).*repmat(inpoly, [1, 1, nframes]))))/sum(inpoly(:));
-        % Create a matrix of traces
-        greenCountMat{i} = [greenCountMat{i}; greenFCount'];
-        redCountMat{i} = [redCountMat{i}; redFCount'];
     end
+    
+    % Store traces
+    greenCountMat{nroi} =  greenFCount';
+    redCountMat{nroi} = redFCount';
     
     % Plot stimulus
     subplot(2,2,2)
@@ -115,8 +119,11 @@ while(npts > 0)
 end
 
 %% Save Figure
-saveFolder = [fileNameStem,'OnlineFigures\'];
-fileStem = char(regexp(metaFiles(1).name,'.*(?=trial)','match'));
-saveFileName{figCount} = [saveFolder,fileStem,'.pdf'];
+saveFolder = [flyPath,'\OnlineFigures\'];
+if ~isdir(saveFolder) 
+    mkdir(saveFolder) 
+end
+fileStem = char(regexp(fileName,'.*(?=trial)','match'));
+saveFileName = [saveFolder,fileStem,'.pdf'];
 mySave(saveFileName);
 
