@@ -31,25 +31,17 @@ refimg = mean(meanGreenMov, 3);
 
 figure
 setCurrentFigurePosition(1)
-subplot(2,4,1)
-text(0.252,0.6,sumTitle,'FontSize',26)
-axis off
-
-y(1) = subplot(2,4,2);
+subplot(2,4,1:2)
+ax1 = axes('Position',[0 0 1 1],'Visible','off');
+ax2 = axes('Position',[0.3 0.1 0.6 0.8]);
+axes(ax2) 
 imshow(refimg, [], 'InitialMagnification', 'fit')
 hold on;
 title(blockDescription)
-axis image
 
-%% Plot stimulus
-purple = [97 69 168]./255;
-h(1) = subplot(2,4,3:4);
-myplot(Stim.timeVec,Stim.stimulus,'Color',purple)
-ylabel('Stimulus (V)')
-set(gca,'xtick',[])
-set(gca,'XColor','white')
-title('Stimulus')
-
+axes(ax1)
+text(0.0252,0.6,sumTitle,'FontSize',26)
+axis off 
 
 %% Get image details
 nframes = size(meanGreenMov, 3);
@@ -61,7 +53,7 @@ colorindex = 0;
 ColorSet = distinguishable_colors(20,'b');
 set(gca, 'ColorOrder', ColorSet);
 order = get(gca,'ColorOrder');
-
+purple = [97 69 168]./255;
 
 %% Get ROIs
 npts = 1;
@@ -98,6 +90,14 @@ while(npts > 0)
     greenCountMat{nroi} =  greenFCount';
     redCountMat{nroi} = redFCount';
     
+    % Plot stimulus
+    h(1) = subplot(2,4,3:4);
+    myplot(Stim.timeVec,Stim.stimulus,'Color',purple)
+    ylabel('Stimulus (V)')
+    set(gca,'xtick',[])
+    set(gca,'XColor','white')
+    title('Stimulus')
+    
     % Plot the green trace
     h(2) = subplot(2,4,7:8);
     myplot(frameTimes,meanGreenFCount,'Color',currcolor,'Linewidth',2);
@@ -125,7 +125,6 @@ while(npts > 0)
     set(gca,'FontName','Calibri')
     set(0,'DefaultFigureColor','w')
     linkaxes(h(:),'x')
-    linkaxes([h(1),y(1)],'y')
     %     supTitle(sumTitle);
     
     % Store the rois
