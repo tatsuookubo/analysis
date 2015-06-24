@@ -6,7 +6,7 @@ roiDirs = dir('roi*');
     
 %% Determine fixSuffix 
 figSuffix = input('Enter fig suffix ','s'); 
-saveFolder = [flyDir,'\Figures',figSuffix];
+saveFolder = [flyDir,'\Figures\',figSuffix];
 
 folderNum = 1;
 while isdir([saveFolder,num2str(folderNum,'%03d')])

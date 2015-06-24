@@ -5,7 +5,8 @@ cd(flyDir)
 roiDirs = dir('roi*'); 
     
 %% Determine fixSuffix 
-saveFolder = [flyDir,'\Figures',figSuffix];
+figSuffix = input('Enter fig suffix ','s'); 
+saveFolder = [flyDir,'\Figures\',figSuffix];
 
 folderNum = 1;
 while isdir([saveFolder,num2str(folderNum,'%03d')])
@@ -23,7 +24,7 @@ for i = 1:length(roiDirs)
         imageFiles = dir('*.tif');
         metaStem = char(regexp(imageFiles(1).name,'.*(?=_image)','match'));
         metaFileName = [flyDir,'\',roiDirs(i).name,'\',blockDirs(j).name,'\',metaStem,'.mat'];
-        postMultTrialPlot(metaFileName,figSuffix,varargin)
+        postMultTrialPlot(metaFileName,figSuffix)
     end
 end
 
