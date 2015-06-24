@@ -1,4 +1,9 @@
-function postMultTrialPlot(metaFileName)
+function postMultTrialPlot(metaFileName,varargin)
+
+if ~exist('metaFilename','var')
+    [fileName,pathName] = uigetfile;
+    metaFileName = fullfile(pathName,fileName); 
+end
 
 %% Perfrom clicky on each trial 
 [greenMov,redMov,~,metaFileName,frameTimes] = loadMeanMovie(metaFileName);
