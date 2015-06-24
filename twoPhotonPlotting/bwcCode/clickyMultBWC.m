@@ -1,4 +1,4 @@
-function [roi_points, greenCountMat, redCountMat] = clickyMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,varargin)
+function [roi_points, greenCountMat, redCountMat] = clickyMultBWC(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,blockNum,varargin)
 
 % Lets you select ROIS by left clicking to make a shape then right clicking
 % to finish that shape.
@@ -16,12 +16,16 @@ load(metaFileName)
 dateNumber = datenum(exptInfo.dNum,'yymmdd');
 dateAsString = datestr(dateNumber,'mm-dd-yy');
 roiNum = trialMeta.roiNum;
-blockNum = trialMeta.blockNum;
-blockDescription = trialMeta.blockDescrip;
 roiDescription = trialMeta.roiDescrip;
 sumTitle = {dateAsString;exptInfo.prefixCode;['ExpNum ',num2str(exptInfo.expNum)];['FlyNum ',num2str(exptInfo.flyNum)];...
-    ['RoiNum ',num2str(roiNum)];['BlockNum ',num2str(blockNum)];blockDescription};
+    ['RoiNum ',num2str(roiNum)];['BlockNum ',blockNum]};
+saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 
+%% See if ROIs already exist 
+if ~strcmp(figSuffix,'Online')
+else
+    numLoops = 1000; 
+end
 %% Get mean movies
 meanGreenMov = mean(greenMov,4);
 meanRedMov = mean(redMov,4);
@@ -100,6 +104,7 @@ while(npts > 0)
     myplot(frameTimes,meanGreenFCount,'Color',currcolor,'Linewidth',2);
     myplot(frameTimes,greenFCount,'Color',currcolor,'Linewidth',1,'LineStyle','--');
     colorindex = colorindex+1;
+    ylabel('F count')
     xlabel('Time (s)')
     title('Green Channel')
     
@@ -135,8 +140,6 @@ set(gca,'FontName','Calibri')
 set(0,'DefaultFigureColor','w')
 
 %% Save Figure
-
-saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 if ~isdir(saveFolder)
     mkdir(saveFolder)
 end

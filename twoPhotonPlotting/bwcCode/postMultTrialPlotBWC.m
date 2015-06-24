@@ -1,11 +1,8 @@
-function postMultTrialPlot(metaFileName,figSuffix,varargin)
+function postMultTrialPlotBWC(metaFileName,figSuffix,blockNum,varargin)
 
 if ~exist('metaFileName','var')
     [fileName,pathName] = uigetfile;
     metaFileName = fullfile(pathName,fileName); 
-end
-if ~exist('figSuffix','var')
-    figSuffix = 'test';
 end
 
 %% Perfrom clicky on each trial 
@@ -13,7 +10,7 @@ end
 load(metaFileName)
 greenCorrected = motionCorrection(greenMov,Stim,frameTimes); 
 redCorrected = motionCorrection(redMov,Stim); 
-[roi, greenCountMat, redCountMat] = clickyMult(greenCorrected,redCorrected,Stim,frameTimes,metaFileName,figSuffix);
+[roi, greenCountMat, redCountMat] = clickyMultBWC(greenCorrected,redCorrected,Stim,frameTimes,metaFileName,figSuffix,blockNum);
 
 %% Save plot data 
 setpref('scimPlotPrefs','roi',roi);
