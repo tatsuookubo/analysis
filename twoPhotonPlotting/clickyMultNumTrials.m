@@ -1,4 +1,4 @@
-function [roi_points, greenCountMat, redCountMat] = clickyMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,varargin)
+function [roi_points, greenCountMat, redCountMat] = clickyMultNumTrials(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,varargin)
 
 % Lets you select ROIS by left clicking to make a shape then right clicking
 % to finish that shape.
@@ -36,30 +36,30 @@ colorindex = 0;
 ColorSet = distinguishable_colors(20,'b');
 purple = [97 69 168]./255;
 
-%% See if ROIs already exist 
+%% See if ROIs already exist
 useOldRois = 'n'; % Set this as default
 numLoops = 1000;
-if strcmp(figSuffix,'Online') || blockNum == 1 
-    % Do nothing
-else    
-    prevBlockNum = num2str(str2num(blockNum)-1,'%03d');
+if strcmp(figSuffix,'Online')
+elseif blockNum == 1
+else
+    prevBlockNum = num2str(blockNum-1,'%03d');
     roiFileName = [saveFolder,'roiNum',num2str(roiNum,'%03d'),'_blockNum',prevBlockNum,'_rois.mat'];
     if exist(roiFileName,'file')
         load(roiFileName)
         
         figure
         imshow(refimg, [], 'InitialMagnification', 'fit')
-        hold on 
+        hold on
         set(gca, 'ColorOrder', ColorSet);
         order = get(gca,'ColorOrder');
         for oldRoiNum = 1:length(roiData.roi)
-            currcolor = order(oldRoiNum,:); 
+            currcolor = order(oldRoiNum,:);
             roiMat = cell2mat(roiData.roi(oldRoiNum));
-            xv = roiMat(:,1); 
+            xv = roiMat(:,1);
             yv = roiMat(:,2);
             plot(xv,yv, 'Linewidth', 1,'Color',currcolor);
         end
-        useOldRois = input('Use these Rois?','s'); 
+        useOldRois = input('Use these Rois?','s');
     end
 end
 
@@ -71,7 +71,7 @@ order = get(gca,'ColorOrder');
 
 subplot(2,2,1);
 imshow(refimg, [], 'InitialMagnification', 'fit')
-hold on 
+hold on
 title(roiDescription)
 
 
@@ -102,13 +102,13 @@ for j = 1:numLoops
     % Draw the ROI
     if strcmp(useOldRois,'y')
         if j == (length(roiData.roi) + 1)
-            break 
-        else 
+            break
+        else
             roiMat = cell2mat(roiData.roi(j));
-            xv = roiMat(:,1); 
+            xv = roiMat(:,1);
             yv = roiMat(:,2);
         end
-    else 
+    else
         [xv, yv] = (getline(gca, 'closed'));
         if size(xv,1) < 3  % exit loop if only a line is drawn
             break
@@ -119,56 +119,58 @@ for j = 1:numLoops
     inpoly = inpolygon(x,y,xv,yv);
     
     % Draw the bounding polygons and label them
-    currcolor = order(nroi,:);
-    plot(xv, yv, 'Linewidth', 1,'Color',currcolor);
-    text(mean(xv),mean(yv),num2str(nroi),'Color',currcolor,'FontSize',12);
+    plot(xv, yv, 'Linewidth', 1,'Color','g');
+    text(mean(xv),mean(yv),num2str(nroi),'Color','g','FontSize',12);
     
     % Calculate the mean trace within the polygon
     meanGreenFCount = squeeze(sum(sum(meanGreenMov.*repmat(inpoly, [1, 1, nframes]))))/sum(inpoly(:));
     meanRedFCount = squeeze(sum(sum(meanRedMov.*repmat(inpoly, [1, 1, nframes]))))/sum(inpoly(:));
     for i = 1:numTrials
+        currcolor = order(i,:);
         greenFCount(i,:) = squeeze(sum(sum(squeeze(greenMov(:,:,:,i)).*repmat(inpoly, [1, 1, nframes]))))/sum(inpoly(:));
         redFCount(i,:) = squeeze(sum(sum(squeeze(redMov(:,:,:,i)).*repmat(inpoly, [1, 1, nframes]))))/sum(inpoly(:));
+        
+        % Plot the green trace
+        h(2) = subplot(2,2,4);
+        hold on
+        myplot(frameTimes,greenFCount(i,:),'Color',currcolor,'Linewidth',1,'LineStyle','--');
+        colorindex = colorindex+1;
+        xlabel('Time (s)')
+        title('Green Channel')
+        
+        % Plot the red trace
+        h(3) = subplot(2,2,3);
+        hold on
+        myplot(frameTimes,redFCount(i,:),'Color',currcolor,'Linewidth',1,'LineStyle','--');
+        colorindex = colorindex+1;
+        ylabel('F count')
+        xlabel('Time (s)')
+        title('Red channel')
     end
     
     % Store traces
     greenCountMat{nroi} =  greenFCount';
     redCountMat{nroi} = redFCount';
     
-    % Plot the green trace
-    h(2) = subplot(2,2,4);
-    hold on 
-    myplot(frameTimes,meanGreenFCount,'Color',currcolor,'Linewidth',2);
-    myplot(frameTimes,greenFCount,'Color',currcolor,'Linewidth',1,'LineStyle','--');
-    colorindex = colorindex+1;
-    xlabel('Time (s)')
-    title('Green Channel')
-    
-    % Plot the red trace
-    h(3) = subplot(2,2,3);
-    hold on 
-    myplot(frameTimes,meanRedFCount,'Color',currcolor,'Linewidth',2);
-    myplot(frameTimes,redFCount,'Color',currcolor,'Linewidth',1,'LineStyle','--');
-    colorindex = colorindex+1;
-    ylabel('F count')
-    xlabel('Time (s)')
-    title('Red channel')
-    
     % Store the rois
     roi_points{nroi} = [xv, yv];
     nroi = nroi + 1;
 end
 
-%% Figure formatting 
+%% Add legend
+subplot(2,2,4)
+legend(strsplit(num2str(1:numTrials)))
+
+%% Figure formatting
 spaceplots
 linkaxes(h(:),'x')
 set(gca,'FontName','Calibri')
 set(0,'DefaultFigureColor','w')
 
-%% Add text description 
+%% Add text description
 h = axes('position',[0,0,1,1],'visible','off','Units','normalized');
 hold(h);
-pos = [0.01,0.6, 0.2 0.6];   
+pos = [0.01,0.6, 0.2 0.6];
 ht = uicontrol('Style','Text','Units','normalized','Position',pos,'Fontsize',20,'HorizontalAlignment','left','FontName','Calibri','BackGroundColor','w');
 
 % Wrap string, also returning a new position for ht
@@ -183,6 +185,6 @@ fileStem = char(regexp(fileName,'.*(?=_trial)','match'));
 saveFileName = [saveFolder,fileStem,'.pdf'];
 mySave(saveFileName);
 
-%% Close figure 
+%% Close figure
 close all
 
