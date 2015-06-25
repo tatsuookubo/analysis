@@ -20,7 +20,7 @@ blockNum = trialMeta.blockNum;
 blockDescription = trialMeta.blockDescrip;
 roiDescription = trialMeta.roiDescrip;
 sumTitle = {dateAsString;exptInfo.prefixCode;['ExpNum ',num2str(exptInfo.expNum)];['FlyNum ',num2str(exptInfo.flyNum)];...
-    ['RoiNum ',num2str(roiNum)];['BlockNum ',num2str(blockNum)];blockDescription;''};
+    ['RoiNum ',num2str(roiNum)];['BlockNum ',num2str(blockNum)];blockDescription;'';''};
 saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 
 
@@ -168,7 +168,7 @@ set(0,'DefaultFigureColor','w')
 %% Add text description 
 h = axes('position',[0,0,1,1],'visible','off','Units','normalized');
 hold(h);
-pos = [0.01,0.6, 0.2 0.6];   
+pos = [0.01,0.6, 0.15 0.7];   
 ht = uicontrol('Style','Text','Units','normalized','Position',pos,'Fontsize',20,'HorizontalAlignment','left','FontName','Calibri','BackGroundColor','w');
 
 % Wrap string, also returning a new position for ht
