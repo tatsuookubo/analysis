@@ -26,5 +26,6 @@ roiData.frameTime = frameTimes;
 flyPath = char(regexp(pathName,'.*(?=\\roi)','match'));
 saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 roiNum = num2str(trialMeta.roiNum,'%03d'); 
+blockNum = num2str(trialMeta.blockNum,'%03d'); 
 saveFileName = [saveFolder,'roiNum',roiNum,'_blockNum',blockNum,'_rois.mat'];
 save(saveFileName,'roiData')
