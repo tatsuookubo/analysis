@@ -91,7 +91,6 @@ for n = 1:numStim
     axis tight
     
     linkaxes(h,'x')
-    xlim([2.5,4])
     
     if n == 1
         spaceplots(fig,[0 0 0.025 0])
