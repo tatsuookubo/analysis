@@ -1,0 +1,15 @@
+function postHocPlotAllExpts(prefixCode,expNum,flyNum)
+
+exptInfo.prefixCode     = prefixCode;
+exptInfo.expNum         = expNum;
+exptInfo.flyNum         = flyNum;
+exptInfo.flyExpNum      = 1;
+[~, path, ~, ~] = getDataFileNameBall(exptInfo);
+fileStem = char(regexp(path,'.*(?=flyExpNum)','match'));
+cd(fileStem); 
+expNumList = dir('flyExp*');
+for i = 1:length(expNumList)
+    flyExpNumList(i) = num2str(char(regexp(expNumList(i).name,'(?<=flyExpNum).*','match')));
+end
+
+plotBallDataPostHoc(prefixCode,expNum,flyNum,flyExpNum)
