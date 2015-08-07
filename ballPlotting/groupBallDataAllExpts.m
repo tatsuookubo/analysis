@@ -1,4 +1,4 @@
-function postHocPlotAllExpts(prefixCode,expNum,flyNum)
+function groupBallDataAllExpts(prefixCode,expNum,flyNum)
 
 exptInfo.prefixCode     = prefixCode;
 exptInfo.expNum         = expNum;
@@ -9,7 +9,6 @@ fileStem = char(regexp(path,'.*(?=flyExpNum)','match'));
 cd(fileStem); 
 expNumList = dir('flyExp*');
 for i = 1:length(expNumList)
-    flyExpNumList(i) = num2str(char(regexp(expNumList(i).name,'(?<=flyExpNum).*','match')));
+    flyExpNum = str2num(char(regexp(expNumList(i).name,'(?<=flyExpNum).*','match')));
+    groupBallDataPostHoc(prefixCode,expNum,flyNum,flyExpNum)
 end
-
-plotBallDataPostHoc(prefixCode,expNum,flyNum,flyExpNum)

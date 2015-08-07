@@ -25,6 +25,9 @@ set(0,'DefaultFigureColor','w')
 %% Calculate title 
 dateNumber = datenum(exptInfo.dNum,'yymmdd');
 dateAsString = datestr(dateNumber,'mm-dd-yy');
+if ~exist('exptInfo.aim','var')
+    exptInfo.aim = '';
+end
 sumTitle = {[dateAsString,', ',exptInfo.prefixCode,', ExpNum ',num2str(exptInfo.expNum),', FlyNum ',num2str(exptInfo.flyNum),...
     ', FlyExpNum ',num2str(exptInfo.flyExpNum)];['Aim: ',exptInfo.aim]};
 fileStem = char(regexp(path,'.*(?=flyExpNum)','match'));
