@@ -11,3 +11,7 @@ export_fig(filename,'-pdf','-q50')
 fileStem = char(regexp(filename,'.*(?=.pdf)','match'));
 imageFilename = [fileStem,'_image.emf'];
 print(gcf,'-dmeta',imageFilename)
+
+figFileStem = char(regexp(filename,'.*(?=.pdf)','match'));
+figFilename = [figFileStem,'_matFig.fig'];
+savefig(figFilename)

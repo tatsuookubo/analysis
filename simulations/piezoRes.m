@@ -1,11 +1,12 @@
 close all 
 clear all
 
-fs = 1/1e4; 
-time = fs:fs:1; 
-freq = 800;
+fs = 1/1e5; 
+time = fs:fs:10; 
+freq = 0.25;
 
-wave = 0.15*sin(time*freq*2*pi); 
+maxDistance = 0.5;
+wave = maxDistance*sin(time*freq*2*pi); 
 
 res1 = 0.009155;
 res2 = 0.027466;
@@ -14,12 +15,12 @@ wave1 = res1.*(round(wave./res1));
 wave2 = res2.*(round(wave./res2));
 
 figure()
-plot(time,wave)
+plot(time,wave,'g')
 hold on 
 plot(time,wave1,'r')
 hold on 
 plot(time,wave2,'b')
-
+legend({'Desired wave','30um piezo','90um piezo'})
 %% PSD
 sampRate = 1/fs; 
  

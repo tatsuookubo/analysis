@@ -1,4 +1,4 @@
-function plotDataGroupedByStim(prefixCode,expNum,flyNum,cellNum,cellExpNum)
+function plotDataGroupedByStim(exptInfo)
 
 close all
 
@@ -11,29 +11,20 @@ gray = [192 192 192]./255;
 
 
 %% Load groupedData file
-exptInfo.prefixCode     = prefixCode;
-exptInfo.expNum         = expNum;
-exptInfo.flyNum         = flyNum;
-exptInfo.cellNum        = cellNum;
-exptInfo.cellExpNum     = cellExpNum;
-
 [~, path, ~, idString] = getDataFileName(exptInfo);
 fileName = [path,'groupedData.mat'];
 load(fileName);
 
-saveFolder = [path,'figures\'];
-imageFolder = [saveFolder,'Images\'];
+saveFolderStem = char(regexp(path,'.*(?=cellNum)','match'));
+saveFolder = [saveFolderStem,'Figures\'];
 if ~isdir(saveFolder)
     mkdir(saveFolder);
-end
-if ~isdir(imageFolder)
-    mkdir(imageFolder)
 end
 
 %% Load fly details 
 microCzarSettings;   % Loads settings
-filename = [dataDirectory,prefixCode,'\expNum',num2str(expNum,'%03d'),...
-        '\flyNum',num2str(flyNum,'%03d'),'\flyData'];
+filename = [dataDirectory,exptInfo.prefixCode,'\expNum',num2str(exptInfo.expNum,'%03d'),...
+        '\flyNum',num2str(exptInfo.flyNum,'%03d'),'\flyData'];
 load(filename);
 
 %% Load experiment details 
@@ -52,8 +43,8 @@ for n = 1:numStim
     fig = figure(n);
     setCurrentFigurePosition(2)
     
-    h(1) = subplot(3,1,1);
-    plot(GroupStim(n).stimTime,GroupStim(n).stimulus,'k')
+    h(1) = subplot(4,1,1);
+    plot(GroupData(n).sampTime,GroupData(n).speakerCommand,'Color',gray)
     hold on
     ylabel('Voltage (V)')
     set(gca,'Box','off','TickDir','out','XTickLabel','')
@@ -61,15 +52,29 @@ for n = 1:numStim
     set(gca,'xtick',[])
     set(gca,'XColor','white')
     if n == 1 
-        t = title(h(1),[dateAsString,', ',prefixCode,', ','ExpNum ',num2str(expNum),', FlyNum ',num2str(flyNum),', CellNum ',num2str(cellNum),', CellExpNum ',num2str(cellExpNum)]);
+        t = title(h(1),[dateAsString,', ',exptInfo.prefixCode,', ','ExpNum ',num2str(exptInfo.expNum),', FlyNum ',num2str(exptInfo.flyNum),', CellNum ',num2str(exptInfo.cellNum),', CellExpNum ',num2str(exptInfo.cellExpNum)]);
         set(t,'Fontsize',20);
     end
     
-    h(3) = subplot(3,1,2);
-    plot(GroupData(n).sampTime,GroupData(n).voltage,'Color',gray)
+    h(2) = subplot(4,1,2);
+    hold on
+    plot(GroupData(n).sampTime,GroupData(n).piezoSG,'Color',gray)
+    if size(GroupData(n).piezoSG,1)>1
+        plot(GroupData(n).sampTime,mean(GroupData(n).piezoSG),'k')
+    end
+    plot(GroupStim(n).stimTime,GroupData(n).piezoCommand,'r')
+    ylabel('Voltage (V)')
+    set(gca,'Box','off','TickDir','out','XTickLabel','')
+    ylim([-0.1 10.1])
+    set(gca,'xtick',[])
+    set(gca,'XColor','white')
+    
+    h(3) = subplot(4,1,3);
+%     plot(GroupData(n).sampTime,GroupData(n).voltage,'Color',gray)
+    plot(GroupData(n).sampTime,GroupData(n).voltage)
     hold on
     if size(GroupData(n).voltage,1)>1
-        plot(GroupData(n).sampTime,mean(GroupData(n).voltage),'k')
+%         plot(GroupData(n).sampTime,mean(GroupData(n).voltage),'k')
     end
     hold on
     ylabel('Voltage (mV)')
@@ -78,7 +83,7 @@ for n = 1:numStim
     set(gca,'xtick',[])
     set(gca,'XColor','white')
     
-    h(2) = subplot(3,1,3);
+    h(4) = subplot(4,1,4);
     plot(GroupData(n).sampTime,GroupData(n).current,'Color',gray)
     hold on
     if size(GroupData(n).current,1)>1
@@ -99,21 +104,12 @@ for n = 1:numStim
     end
     
     %% Format and save
-    saveFilename{n} = [saveFolder,'\GroupData_Stim',num2str(n),'.pdf'];
-    set(gcf, 'PaperType', 'usletter');
-    orient landscape
-    export_fig(saveFilename{n},'-pdf','-q50')
-    imageFilename = [imageFolder,'stimNum_',num2str(n),'.emf'];
-    print(fig,'-dmeta',imageFilename)
-      
+    saveFileName{n} = [saveFolder,idString,'stimNum',num2str(n,'%03d'),'.pdf'];
+    mySave(saveFileName{n});      
     close all
 end
 
-figFilename = [saveFolder,idString,'allFigures.pdf'];
-if exist(figFilename,'file')
-    delete(figFilename)
-end
-append_pdfs(figFilename,saveFilename{:})
-delete(saveFilename{:})
+figFilename = [saveFolder,idString,'.pdf'];
+myAppendPdfs(saveFileName,figFilename);
 
 end
