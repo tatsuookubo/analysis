@@ -25,3 +25,8 @@ end
 
 fileName = [path,fileNamePreamble,'groupedData.mat'];
 save(fileName, 'groupedData');
+
+Vxy = sqrt((data.processedData.Vy.^2)+(data.processedData.Vx.^2));
+avgResultantVelocity = nanmean(Vxy(:,stimStartIndex:stimEndIndex),2);
+trialsToInclude=intersect(find(0.1<avgResultantVelocity),find(avgResultantVelocity<3))';
+trialsToInclude = unique(trialsToInclude);
