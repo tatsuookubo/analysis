@@ -1,7 +1,7 @@
 function groupBallDataPostHoc(prefixCode,expNum,flyNum,flyExpNum)
 
-dsFactor = 400;
-dsPhaseShift = 200;
+dsFactor = 400; 
+dsPhaseShift = 200; 
 exptInfo.prefixCode     = prefixCode;
 exptInfo.expNum         = expNum;
 exptInfo.flyNum         = flyNum;
@@ -11,7 +11,7 @@ cd(path);
 dirCont = dir('*trial*');
 for i = 1:length(dirCont)
     load(dirCont(i).name);
-    trialNum = trialMeta.trialNum;
+    trialNum = trialMeta.trialNum;     
     settings = ballSettings;
     [procData.vel(:,1),procData.disp(:,1)] = processBallData(data.xVel,settings.xMinVal,settings.xMaxVal,settings,Stim);
     [procData.vel(:,2),procData.disp(:,2)] = processBallData(data.yVel,settings.yMinVal,settings.yMaxVal,settings,Stim);
@@ -21,13 +21,14 @@ for i = 1:length(dirCont)
     groupedData.yDisp(trialNum,:) = downsample(procData.disp(:,2),dsFactor,dsPhaseShift);
     groupedData.dsTime = downsample(Stim.timeVec,400,200);
     groupedData.stimNum(trialNum) = trialMeta.stimNum;
-    stimInd = Stim.startPadDur*Stim.sampleRate:(Stim.startPadDur+Stim.stimDur)*Stim.sampleRate;
-    Vxy = sqrt((groupedData.xVel(trialNum,:).^2)+(groupedData.yVel(trialNum,:).^2));
-    avgResultantVelocity = mean(Vxy);
-    groupedData.trialsToInclude(trialNum,:) = 1<avgResultantVelocity && avgResultantVelocity<30;
 end
 
 fileName = [path,fileNamePreamble,'groupedData.mat'];
 save(fileName, 'groupedData');
 
+Vxy = sqrt((groupedData.xVel(trialNum,:).^2)+(groupedData.yVel(trialNum,:).^2));
+avgResultantVelocity = meanVxy(stimInd);
+trialsToInclude=intersect(find(0.1<avgResultantVelocity),find(avgResultantVelocity<3))';
+trialsToInclude = unique(trialsToInclude);
 
+stimInd = Stim.startPadDur*Stim.sampleRate:(StimStartPadDur+Stim.stimDur)*Stim.sampleRate;  

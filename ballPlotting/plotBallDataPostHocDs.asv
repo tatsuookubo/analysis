@@ -31,11 +31,8 @@ saveFileName = [saveFolder,'flyExpNum',num2str(exptInfo.flyExpNum,'%03d'),'.pdf'
 flyDataPreamble = char(regexp(fileNamePreamble,'.*(?=flyExpNum)','match'));
 flyDataFileName = [fileStem,flyDataPreamble,'flyData'];
 load(flyDataFileName);
-if ~isfield(FlyData,'aim')
+if ~strcmp(FlyData.aim,'')
     FlyData.aim = '';
-end
-if ~isfield(exptInfo,'flyExpNotes')
-    exptInfo.flyExpNotes = '';
 end
 sumTitle = {[dateAsString,', ',exptInfo.prefixCode,', ExpNum ',num2str(exptInfo.expNum),', FlyNum ',num2str(exptInfo.flyNum),...
     ', FlyExpNum ',num2str(exptInfo.flyExpNum)];['Aim: ',FlyData.aim];['Expt Notes: ',exptInfo.flyExpNotes]};
