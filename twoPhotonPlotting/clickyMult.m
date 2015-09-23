@@ -36,31 +36,33 @@ colorindex = 0;
 ColorSet = distinguishable_colors(20,'b');
 purple = [97 69 168]./255;
 
-%% See if ROIs already exist 
-useOldRois = 'n'; % Set this as default
+%% See if ROIs already exist
 numLoops = 1000;
-if strcmp(figSuffix,'Online') || blockNum == 1 
-    % Do nothing
-else    
-    prevBlockNum = num2str(str2num(blockNum)-1,'%03d');
+lastRoiNum = getpref('scimPlotPrefs','lastRoiNum');
+currRoiNum = getpref('scimSavePrefs','roiNum');
+if getpref('scimPlotPrefs','newRoi')
+    disp('New ROI');
+    useOldRois = 'n'; 
+else
+    prevBlockNum = num2str(blockNum-1,'%03d');
     roiFileName = [saveFolder,'roiNum',num2str(roiNum,'%03d'),'_blockNum',prevBlockNum,'_rois.mat'];
-    if exist(roiFileName,'file')
-        load(roiFileName)
-        
-        figure
-        imshow(refimg, [], 'InitialMagnification', 'fit')
-        hold on 
-        set(gca, 'ColorOrder', ColorSet);
-        order = get(gca,'ColorOrder');
-        for oldRoiNum = 1:length(roiData.roi)
-            currcolor = order(oldRoiNum,:); 
-            roiMat = cell2mat(roiData.roi(oldRoiNum));
-            xv = roiMat(:,1); 
-            yv = roiMat(:,2);
-            plot(xv,yv, 'Linewidth', 1,'Color',currcolor);
-        end
-        useOldRois = input('Use these Rois?','s'); 
-    end
+    roiData.roi = getpref('scimPlotPrefs','roi');
+    close all
+%     figure
+%     imshow(refimg, [], 'InitialMagnification', 'fit')
+%     hold on
+%     set(gca, 'ColorOrder', ColorSet);
+%     order = get(gca,'ColorOrder');
+%     for oldRoiNum = 1:length(roiData.roi)
+%         currcolor = order(oldRoiNum,:);
+%         roiMat = cell2mat(roiData.roi(oldRoiNum));
+%         xv = roiMat(:,1);
+%         yv = roiMat(:,2);
+%         plot(xv,yv, 'Linewidth', 1,'Color',currcolor);
+%     end
+    useOldRois = 'y'; 
+    %         useOldRois = input('Use these Rois?','s');
+    
 end
 
 %% Plot ref image for future save plot
@@ -71,7 +73,7 @@ order = get(gca,'ColorOrder');
 
 subplot(2,2,1);
 imshow(refimg, [], 'InitialMagnification', 'fit')
-hold on 
+hold on
 title(roiDescription)
 
 
@@ -102,13 +104,13 @@ for j = 1:numLoops
     % Draw the ROI
     if strcmp(useOldRois,'y')
         if j == (length(roiData.roi) + 1)
-            break 
-        else 
+            break
+        else
             roiMat = cell2mat(roiData.roi(j));
-            xv = roiMat(:,1); 
+            xv = roiMat(:,1);
             yv = roiMat(:,2);
         end
-    else 
+    else
         [xv, yv] = (getline(gca, 'closed'));
         if size(xv,1) < 3  % exit loop if only a line is drawn
             break
@@ -137,7 +139,7 @@ for j = 1:numLoops
     
     % Plot the green trace
     h(2) = subplot(2,2,4);
-    hold on 
+    hold on
     myplot(frameTimes,meanGreenFCount,'Color',currcolor,'Linewidth',2);
     myplot(frameTimes,greenFCount,'Color',currcolor,'Linewidth',1,'LineStyle','--');
     colorindex = colorindex+1;
@@ -146,7 +148,7 @@ for j = 1:numLoops
     
     % Plot the red trace
     h(3) = subplot(2,2,3);
-    hold on 
+    hold on
     myplot(frameTimes,meanRedFCount,'Color',currcolor,'Linewidth',2);
     myplot(frameTimes,redFCount,'Color',currcolor,'Linewidth',1,'LineStyle','--');
     colorindex = colorindex+1;
@@ -159,16 +161,16 @@ for j = 1:numLoops
     nroi = nroi + 1;
 end
 
-%% Figure formatting 
+%% Figure formatting
 spaceplots
 linkaxes(h(:),'x')
 set(gca,'FontName','Calibri')
 set(0,'DefaultFigureColor','w')
 
-%% Add text description 
+%% Add text description
 h = axes('position',[0,0,1,1],'visible','off','Units','normalized');
 hold(h);
-pos = [0.01,0.6, 0.15 0.7];   
+pos = [0.01,0.6, 0.15 0.7];
 ht = uicontrol('Style','Text','Units','normalized','Position',pos,'Fontsize',20,'HorizontalAlignment','left','FontName','Calibri','BackGroundColor','w');
 
 % Wrap string, also returning a new position for ht
@@ -183,6 +185,6 @@ fileStem = char(regexp(fileName,'.*(?=_trial)','match'));
 saveFileName = [saveFolder,fileStem,'.pdf'];
 mySave(saveFileName);
 
-%% Close figure 
-close all
+%% Close figure
+
 
