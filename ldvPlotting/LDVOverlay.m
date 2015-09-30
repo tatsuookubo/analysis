@@ -3,12 +3,12 @@ function LDVOverlay(expNum,flyNum)
 expNum = num2str(expNum,'%03d');
 flyNum = num2str(flyNum,'%03d');
 
-exptNums =[3,4];
+exptNums =[1,2];
 gray = [192 192 192]./255;
 
 colours = {'r','b'};
 figCount = 0;
-rootFolder = ['C:\Users\Alex\Documents\Data\ldv\expNum',expNum,'\flyNum',flyNum,'\'];
+rootFolder = ['C:\Users\Alex\Documents\Data\ldvData\expNum',expNum,'\flyNum',flyNum,'\'];
 saveFolder = [rootFolder,'Figures\'];
 imageFolder = [rootFolder,'Figures\Images\'];
 
@@ -23,7 +23,7 @@ count2 = 0;
 for n = exptNums %18:21; %[1:3,5:18,22:27];
     %     close all
     count2 = count2+1;
-    filename = ['C:\Users\Alex\Documents\Data\ldv\expNum001\flyNum006\ldv_expNum001_flyNum006_flyExpNum',num2str(n,'%03d')];
+    filename = ['C:\Users\Alex\Documents\Data\ldvData\expNum001\flyNum003\ldv_expNum001_flyNum003_flyExpNum',num2str(n,'%03d')];
     load(filename);
     
     dateNumber = datenum(exptInfo.dNum,'yymmdd');
@@ -140,18 +140,32 @@ imageFilename = [imageFolder,'overlay_zoom_2.emf'];
 print(fig,'-dmeta',imageFilename)
 
 xlim([0.995 1.025])
+box off;
+set(gca,'TickDir','out')
+set(0,'DefaultFigureColor','w')
+axis tight
+set(gca,'Fontsize',24)
+set(gca,'FontName','Calibri')
+set(groot,'defaultLineLineWidth',2)
+set(0,'defaultAxesFontName','Calibri')
+set(0,'defaultAxesFontSize',24)
+title('')
+xlabel('Time (s)')
 figCount = figCount + 1;
 saveFilename{figCount} = [saveFolder,'overlay_zoom_3.pdf'];
-set(gcf, 'PaperType', 'usletter');
-orient landscape
-export_fig(saveFilename{figCount},'-pdf','-q50','-opengl')
-imageFilename = [imageFolder,'overlay_zoom_3.emf'];
-print(fig,'-dmeta',imageFilename)
+mySave(saveFilename)
+
+
+% set(gcf, 'PaperType', 'usletter');
+% orient landscape
+% export_fig(saveFilename{figCount},'-pdf','-q50','-opengl')
+% imageFilename = [imageFolder,'overlay_zoom_3.emf'];
+% print(fig,'-dmeta',imageFilename)
 
 %% Append pdfs
-figFilename = [saveFolder,'allFigures2.pdf'];
-if exist(figFilename,'file')
-    delete(figFilename)
-end
-append_pdfs(figFilename,saveFilename{:})
-delete(saveFilename{:})
+% figFilename = [saveFolder,'allFigures2.pdf'];
+% if exist(figFilename,'file')
+%     delete(figFilename)
+% end
+% append_pdfs(figFilename,saveFilename{:})
+% delete(saveFilename{:})
