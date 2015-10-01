@@ -46,7 +46,7 @@ numStim = length(GroupData);
 
 n = 1; 
 fig = figure(n);
-setCurrentFigurePosition(2)
+set(gcf,'Unit','inches','Position',[5 3 4 5]);
 
 h(1) = subplot(4,1,1);
 plot(GroupStim(n).stimTime,GroupStim(n).stimulus,'k')
@@ -66,7 +66,12 @@ set(gca,'XColor','white')
 % end
 
 h(2) = subplot(4,1,2);
-plot(GroupData(1).sampTime,mean(GroupData(1).voltage),'r')
+std1 = std(GroupData(1).voltage);
+plot(GroupData(1).sampTime,mean(GroupData(1).voltage),'r','LineWidth',2)
+hold on 
+% plot(GroupData(1).sampTime,mean(GroupData(1).voltage)+std1,'r','LineWidth',0.5)
+% plot(GroupData(1).sampTime,mean(GroupData(1).voltage)-std1,'r','LineWidth',0.5)
+% plot(GroupData(1).sampTime,GroupData(1).voltage,'r','LineWidth',0.5)
 set(gca,'Box','off','TickDir','out','XTickLabel','')
 set(gca,'xtick',[],'XColor','white')
 axis tight
@@ -74,7 +79,12 @@ legend({'probe on left'},'Location','Best')
 legend boxoff;
 
 h(3) = subplot(4,1,3);
-plot(GroupData(3).sampTime,mean(GroupData(2).voltage),'k')
+std2 = std(GroupData(2).voltage);
+hold on 
+plot(GroupData(2).sampTime,mean(GroupData(2).voltage),'k','LineWidth',2)
+% plot(GroupData(2).sampTime,mean(GroupData(2).voltage)+std2,'k','LineWidth',0.5)
+% plot(GroupData(2).sampTime,mean(GroupData(2).voltage)-std2,'k','LineWidth',0.5)
+% plot(GroupData(2).sampTime,GroupData(2).voltage,'k','LineWidth',0.5)
 set(gca,'xtick',[],'XColor','white')
 ylabel('Voltage (mV)')
 set(gca,'Box','off','TickDir','out','XTickLabel','')
@@ -83,7 +93,12 @@ legend({'probe off'},'Location','Best')
 legend boxoff;
 
 h(4) = subplot(4,1,4);
-plot(GroupData(3).sampTime,mean(GroupData(3).voltage),'b')
+hold on 
+std3 = std(GroupData(3).voltage);
+plot(GroupData(3).sampTime,mean(GroupData(3).voltage),'b','LineWidth',2)
+% plot(GroupData(3).sampTime,mean(GroupData(3).voltage)+std3,'b','LineWidth',0.5)
+% plot(GroupData(3).sampTime,mean(GroupData(3).voltage)-std3,'b','LineWidth',0.5)
+% plot(GroupData(3).sampTime,GroupData(3).voltage,'b','LineWidth',0.5)
 set(gca,'Box','off','TickDir','out','XTickLabel',{'0','0.5','1','1.5'})
 xlabel('Time (s)')
 axis tight
@@ -99,21 +114,19 @@ else
 end
 
 %% Format and save
-saveFilename{n} = [saveFolder,'\GroupData_Stim',num2str(n),'.pdf'];
-set(gcf, 'PaperType', 'usletter');
-orient landscape
-export_fig(saveFilename{n},'-pdf','-q50')
-imageFilename = [saveFolder,'\overlay.emf'];
-print(fig,'-dmeta',imageFilename)
-
-close all
-
+% saveFilename{n} = [saveFolder,'\GroupData_Stim',num2str(n),'.pdf'];
+% set(gcf, 'PaperType', 'usletter');
+% orient landscape
+% export_fig(saveFilename{n},'-pdf','-q50')
+% imageFilename = [saveFolder,'\overlay.emf'];
+% print(fig,'-dmeta',imageFilename)
 
 figFilename = [saveFolder,idString,'allFigs.pdf'];
-if exist(figFilename,'file')
-    delete(figFilename)
-end
-append_pdfs(figFilename,saveFilename{:})
-delete(saveFilename{:})
+mySave(figFilename)
+% if exist(figFilename,'file')
+%     delete(figFilename)
+% end
+% append_pdfs(figFilename,saveFilename{:})
+% delete(saveFilename{:})
 
 end

@@ -46,8 +46,7 @@ numStim = length(GroupData);
 
 n = 1; 
 fig = figure(n);
-set(gcf,'PaperPositionMode','auto','Unit','inches','Position',[1 1 4 5]);
-setCurrentFigurePosition(2)
+set(gcf,'Unit','inches','Position',[5 3 4 5]);
 
 h(1) = subplot(4,1,1);
 plot(GroupStim(n).stimTime,GroupStim(n).stimulus,'k')
