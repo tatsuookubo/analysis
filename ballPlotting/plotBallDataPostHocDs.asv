@@ -22,7 +22,7 @@ setCurrentFigurePosition(1);
 subplot = @(m,n,p) subtightplot (m, n, p, [0.01 0.05], [0.1 0.01], [0.1 0.01]);
 set(0,'DefaultFigureColor','w')
 
-%% Calculate title
+%% Calculate title 
 dateNumber = datenum(exptInfo.dNum,'yymmdd');
 dateAsString = datestr(dateNumber,'mm-dd-yy');
 fileStem = char(regexp(path,'.*(?=flyExpNum)','match'));
@@ -40,10 +40,10 @@ end
 sumTitle = {[dateAsString,', ',exptInfo.prefixCode,', ExpNum ',num2str(exptInfo.expNum),', FlyNum ',num2str(exptInfo.flyNum),...
     ', FlyExpNum ',num2str(exptInfo.flyExpNum)];['Aim: ',FlyData.aim];['Expt Notes: ',exptInfo.flyExpNotes]};
 
-%% Hardcoded paramters
-timeBefore = 0.3;
-pipStartInd = Stim.startPadDur*Stim.sampleRate/dsFactor + 1;
-indBefore = pipStartInd - timeBefore*Stim.sampleRate/dsFactor;
+%% Hardcoded paramters 
+timeBefore = 0.3; 
+pipStartInd = Stim.startPadDur*Stim.sampleRate/dsFactor + 1; 
+indBefore = pipStartInd - timeBefore*Stim.sampleRate/dsFactor; 
 indAfter = pipStartInd + timeBefore*Stim.sampleRate/dsFactor;
 
 %% Decode
@@ -58,49 +58,42 @@ set(get(gca,'YLabel'),'Rotation',0,'HorizontalAlignment','right')
 set(gca,'XColor','white')
 
 refVect = [0; -1];
-if sum(groupedData.trialsToInclude) == 0
-    return
-end
 trialVect = [mean(groupedData.xDisp(groupedData.trialsToInclude,1));mean(groupedData.yDisp(groupedData.trialsToInclude,1))];
 rotAng = acos(dot(trialVect,refVect)/(norm(trialVect)*norm(refVect)));
-if trialVect(1) > 0
+if trialVect(1) > 0 
     R = [cos(rotAng) sin(rotAng);-sin(rotAng) cos(rotAng)];
-elseif trialVect(1) <= 0
+elseif trialVect(1) <= 0 
     R = [cos(rotAng) -sin(rotAng);sin(rotAng) cos(rotAng)];
 end
 
 numTrials = size(groupedData.xDisp,1);
-for j = 1:numTrials
-    rotVel(j,:,:) = R*[groupedData.xVel(j,:);groupedData.yVel(j,:)];
-    rotDisp(j,:,:) = R*[groupedData.xDisp(j,:);groupedData.yDisp(j,:)];
+for j = 1:numTrials 
+    rotXVel(j,:) = R*groupedData.xVel(j,:);
+    rotYVel(j,:) = R*groupedData.yVel(j,:);
+    rotXDisp(j,:) = R*groupedData.xDisp(j,:);
+    rotYDisp(j,:) = R*groupedData.yDisp(j,:);
 end
-
-rotXDisp = squeeze(rotDisp(:,1,:));
-rotYDisp = squeeze(rotDisp(:,2,:));
-rotXVel = squeeze(rotVel(:,1,:));
-rotYVel = squeeze(rotVel(:,2,:));
+    
 
 for i = 1:length(uniqueStim)
     
-    trialNums = 1:length(groupedData.stimNum);
-    trialsToIncludeNums = trialNums(groupedData.trialsToInclude);
+    trialNums = 1:length(groupedData.stimNum); 
+    trialsToIncludeNums = trialNums(groupedData.trialsToInclude); 
     stimNumIndNotSelected = find(groupedData.stimNum == uniqueStim(i));
     stimNumInd = intersect(trialsToIncludeNums,stimNumIndNotSelected);
     
     meanXDisp = mean(rotXDisp(stimNumInd,:));
     meanYDisp = mean(rotYDisp(stimNumInd,:));
-    meanXVel = mean(rotXVel(stimNumInd,:));
-    meanYVel = mean(rotYVel(stimNumInd,:));
-    stdXDisp = std(rotXDisp(stimNumInd,:));
-    stdYDisp = std(rotYDisp(stimNumInd,:));
-    stdXVel = std(rotXVel(stimNumInd,:));
-    stdYVel = std(rotYVel(stimNumInd,:));
+    meanXVel = mean(rotXDisp(stimNumInd,:));
+    meanYVel = mean(rotYDisp(stimNumInd,:));
+    meanXDisp = mean(rotXDisp(stimNumInd,:));
+    meanYDisp = mean(rotYDisp(stimNumInd,:));
+    meanXVel = mean(rotXDisp(stimNumInd,:));
+    meanYVel = mean(rotYDisp(stimNumInd,:));
     
     h(2) = subplot(7,2,3);
     hold on
-    mySimplePlot(groupedData.dsTime,meanXVel,'Color',colorSet(i,:),'Linewidth',2)
-%     mySimplePlot(groupedData.dsTime,meanXVel+stdXVel,'Color',colorSet(i,:),'Linewidth',0.5)
-%     mySimplePlot(groupedData.dsTime,meanXVel-stdXVel,'Color',colorSet(i,:),'Linewidth',0.5)
+    mySimplePlot(groupedData.dsTime,mean(groupedData.xVel(stimNumInd,:)),'Color',colorSet(i,:))
     set(gca,'XTick',[])
     ylabel({'Lateral Vel';'(mm/s)'})
     set(get(gca,'YLabel'),'Rotation',0,'HorizontalAlignment','right')
@@ -110,9 +103,7 @@ for i = 1:length(uniqueStim)
     
     h(3) = subplot(7,2,5);
     hold on
-    mySimplePlot(groupedData.dsTime,meanYVel,'Color',colorSet(i,:),'Linewidth',2)
-%     mySimplePlot(groupedData.dsTime,meanYVel+stdYVel,'Color',colorSet(i,:),'Linewidth',0.5)
-%     mySimplePlot(groupedData.dsTime,meanYVel-stdYVel,'Color',colorSet(i,:),'Linewidth',0.5)
+    mySimplePlot(groupedData.dsTime,mean(groupedData.yVel(stimNumInd,:)),'Color',colorSet(i,:))
     set(gca,'XTick',[])
     ylabel({'Forward Vel';'(mm/s)'})
     set(get(gca,'YLabel'),'Rotation',0,'HorizontalAlignment','right')
@@ -122,11 +113,8 @@ for i = 1:length(uniqueStim)
     
     h(4) = subplot(7,2,7);
     hold on
-    mySimplePlot(groupedData.dsTime,meanXDisp,'Color',colorSet(i,:),'Linewidth',2)
-%     mySimplePlot(groupedData.dsTime,meanXDisp+stdXDisp,'Color',colorSet(i,:),'Linewidth',0.5)
-%     mySimplePlot(groupedData.dsTime,meanXDisp-stdXDisp,'Color',colorSet(i,:),'Linewidth',0.5)
-%     
-    %     shadedErrorBar(groupedData.dsTime,mean(groupedData.xDisp(stimNumInd,:)),std(groupedData.xDisp(stimNumInd,:)))
+    mySimplePlot(groupedData.dsTime,mean(groupedData.xDisp(stimNumInd,:)),'Color',colorSet(i,:))
+%     shadedErrorBar(groupedData.dsTime,mean(groupedData.xDisp(stimNumInd,:)),std(groupedData.xDisp(stimNumInd,:)))
     set(gca,'XTick',[])
     ylabel({'X Disp';'(mm)'})
     set(get(gca,'YLabel'),'Rotation',0,'HorizontalAlignment','right')
@@ -136,9 +124,7 @@ for i = 1:length(uniqueStim)
     
     h(5) = subplot(7,2,9);
     hold on
-    mySimplePlot(groupedData.dsTime,meanYDisp,'Color',colorSet(i,:),'Linewidth',2)
-%     mySimplePlot(groupedData.dsTime,meanYDisp+stdYDisp,'Color',colorSet(i,:),'Linewidth',0.5)
-%     mySimplePlot(groupedData.dsTime,meanYDisp-stdYDisp,'Color',colorSet(i,:),'Linewidth',0.5)
+    mySimplePlot(groupedData.dsTime,mean(groupedData.yDisp(stimNumInd,:)),'Color',colorSet(i,:))
     ylabel({'Y Disp';'(mm)'})
     set(get(gca,'YLabel'),'Rotation',0,'HorizontalAlignment','right')
     line([groupedData.dsTime(1),groupedData.dsTime(end)],[0,0],'Color','k')
@@ -149,7 +135,7 @@ for i = 1:length(uniqueStim)
     
     subtightplot (7, 2, 11, [0.1 0.05], [0.1 0.01], [0.1 0.01]);
     bins = -10:0.5:40;
-    vTemp = rotYVel(:);
+    vTemp = groupedData.yVel(:);
     hist(vTemp,bins);
     xlim([-10 40])
     xlabel('Forward velocity (mm/s)')
@@ -161,7 +147,7 @@ for i = 1:length(uniqueStim)
     
     subtightplot (7, 2, 13, [0.1 0.05], [0.1 0.01], [0.1 0.01]);
     bins = -10:0.5:40;
-    vTemp =rotXVel(:);
+    vTemp = groupedData.xVel(:);
     hist(vTemp,bins);
     xlim([-10 40])
     xlabel('Lateral velocity (mm/s)')
@@ -173,35 +159,33 @@ for i = 1:length(uniqueStim)
     
     subplot(7,2,2:2:6)
     hold on
-    line([rotXDisp(stimNumInd,pipStartInd),rotXDisp(stimNumInd,indBefore)]',[rotYDisp(stimNumInd,pipStartInd),rotYDisp(stimNumInd,indBefore)]','Color','k');
-    line([rotXDisp(stimNumInd,pipStartInd),rotXDisp(stimNumInd,indAfter)]',[rotYDisp(stimNumInd,pipStartInd),rotYDisp(stimNumInd,indAfter)]','Color',colorSet(i,:));
+    line([groupedData.xDisp(stimNumInd,pipStartInd),groupedData.xDisp(stimNumInd,indBefore)]',[groupedData.yDisp(stimNumInd,pipStartInd),groupedData.yDisp(stimNumInd,indBefore)]','Color','k');
+    line([groupedData.xDisp(stimNumInd,pipStartInd),groupedData.xDisp(stimNumInd,indAfter)]',[groupedData.yDisp(stimNumInd,pipStartInd),groupedData.yDisp(stimNumInd,indAfter)]','Color',colorSet(i,:));
     symAxis
     ylabel('Y displacement (mm)')
     
     
     subtightplot (7, 2, 8:2:14, [0.1 0.05], [0.1 0.01], [0.1 0.01]);
     hold on
-    plot(meanXDisp,meanYDisp,'Color',colorSet(i,:),'Linewidth',2)
-%     plot(meanXDisp+stdXDisp,meanYDisp,'Color',colorSet(i,:),'Linewidth',0.5)
-%     plot(meanXDisp-stdXDisp,meanYDisp,'Color',colorSet(i,:),'Linewidth',0.5)
-    hold on
+    plot(mean(groupedData.xDisp(stimNumInd,:)),mean(groupedData.yDisp(stimNumInd,:)),'Color',colorSet(i,:))
+    hold on 
     symAxis
     xlabel('X displacement (mm)')
     ylabel('Y displacement (mm)')
     if i == 2
-        legend({'Left','Right'},'Location','NorthEastOutside')
-        legend('boxoff')
+    legend({'Left','Right'},'Location','NorthEastOutside')
+    legend('boxoff')
     end
 end
 
-
+    
 suptitle(sumTitle)
 
 %% Save
 if ~isdir(saveFolder)
     mkdir(saveFolder)
 end
-mySave(saveFileName,[5 5]);
+mySave(saveFileName);
 
 end
 
