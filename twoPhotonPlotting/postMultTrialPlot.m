@@ -11,8 +11,8 @@ end
 %% Perfrom clicky on each trial 
 [greenMov,redMov,~,metaFileName,frameTimes] = loadMeanMovie(metaFileName);
 load(metaFileName)
-greenCorrected = motionCorrection(greenMov,Stim,frameTimes); 
-redCorrected = motionCorrection(redMov,Stim); 
+greenCorrected = motionCorrection(greenMov); 
+redCorrected = motionCorrection(redMov); 
 [roi, greenCountMat, redCountMat] = clickyMult(greenCorrected,redCorrected,Stim,frameTimes,metaFileName,figSuffix);
 
 %% Save plot data 

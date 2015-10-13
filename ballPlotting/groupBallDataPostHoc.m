@@ -24,7 +24,7 @@ for i = 1:length(dirCont)
     stimInd = Stim.startPadDur*Stim.sampleRate:(Stim.startPadDur+Stim.stimDur)*Stim.sampleRate;
     Vxy = sqrt((groupedData.xVel(trialNum,:).^2)+(groupedData.yVel(trialNum,:).^2));
     avgResultantVelocity = mean(Vxy);
-    groupedData.trialsToInclude(trialNum,:) = 5<avgResultantVelocity && avgResultantVelocity<50;
+    groupedData.trialsToInclude(trialNum,:) = 3<avgResultantVelocity && avgResultantVelocity<50;
 end
 
 fileName = [path,fileNamePreamble,'groupedData.mat'];
