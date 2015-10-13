@@ -2,52 +2,28 @@ function postMultBlockPlot(metaFileName,figSuffix,varargin)
 
 if ~exist('metaFileName','var')
     [fileName,pathName] = uigetfile;
-    metaFileName = fullfile(pathName,fileName); 
+    metaFileName = fullfile(pathName,fileName);
 end
 if ~exist('figSuffix','var')
-    figSuffix = 'test';
+    figSuffix = 'Online';
 end
 
-%% Perfrom clicky on each trial 
+%% Perfrom clicky on each trial
 roiFolder = char(regexp(metaFileName,'.*(?=\\blockNum)','match'));
-cd(roiFolder); 
-blockFolders = dir('block*'); 
-numBlocks = length(blockFolders); 
-close all 
+cd(roiFolder);
+blockFolders = dir('block*');
+numBlocks = length(blockFolders);
+close all
 
-for i = 1:numBlocks
-    blockNum = i;
-    cd([roiFolder,'\',blockFolders(i).name])
-    trialFiles = dir('*.mat');
-    [greenMov,redMov,~,metaFileName,frameTimes] = loadMeanMovie(metaFileName);
-    load(metaFileName)
-    if i == 1
-        [greenCorrected,refFrameGreen] = motionCorrection(greenMov);
-        [redCorrected,refFrameRed] = motionCorrection(redMov);
-    else 
-        greenCorrected = motionCorrection(greenMov,refFrameGreen);
-        redCorrected = motionCorrection(redMov,refFrameRed);
-    end
-    [roi, greenCountMat, redCountMat] = clickyMult(greenCorrected,Stim,frameTimes,metaFileName,figSuffix,numBlocks,blockNum);
-
-end
+cd([roiFolder,'\',blockFolders(1).name])
+trialFiles = dir('*.mat');
+metaFileName = [roiFolder,'\',blockFolders(1).name,'\',trialFiles(1).name];
+[greenMov,~,~,metaFileName,frameTimes] = loadMeanMovie(metaFileName);
+load(metaFileName)
+[greenCorrected,refFrameGreen] = motionCorrection(greenMov);
+blockPlot(greenCorrected,Stim,frameTimes,metaFileName,figSuffix,numBlocks);
 
 
-%% Save plot data 
-setpref('scimPlotPrefs','roi',roi);
-roiData.roi = roi; 
-roiData.greenCountMat = greenCountMat; 
-roiData.redCountMat = redCountMat; 
-roiData.frameTime = frameTimes; 
-
-[pathName, fileName] = fileparts(metaFileName); 
-flyPath = char(regexp(pathName,'.*(?=\\roi)','match'));
-fileStem = char(regexp(fileName,'.*(?=trial)','match'));
-saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
-roiNum = num2str(trialMeta.roiNum,'%03d'); 
-blockNum = num2str(trialMeta.blockNum,'%03d'); 
-saveFileName = [saveFolder,fileStem,'rois.mat'];
-save(saveFileName,'roiData')
 
 
 

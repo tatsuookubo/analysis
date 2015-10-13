@@ -13,21 +13,16 @@ end
 load(metaFileName)
 greenCorrected = motionCorrection(greenMov); 
 redCorrected = motionCorrection(redMov); 
-[roi, greenCountMat, redCountMat] = clickyMult(greenCorrected,redCorrected,Stim,frameTimes,metaFileName,figSuffix);
+[roiData] = clickyMult(greenCorrected,redCorrected,Stim,frameTimes,metaFileName,figSuffix);
 
 %% Save plot data 
-setpref('scimPlotPrefs','roi',roi);
-roiData.roi = roi; 
-roiData.greenCountMat = greenCountMat; 
-roiData.redCountMat = redCountMat; 
+setpref('scimPlotPrefs','roi',roiData.roi);
 roiData.frameTime = frameTimes; 
 
 [pathName, fileName] = fileparts(metaFileName); 
 flyPath = char(regexp(pathName,'.*(?=\\roi)','match'));
 fileStem = char(regexp(fileName,'.*(?=trial)','match'));
-saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
-roiNum = num2str(trialMeta.roiNum,'%03d'); 
-blockNum = num2str(trialMeta.blockNum,'%03d'); 
+saveFolder = [flyPath,'\Figures\',figSuffix,'\']; 
 saveFileName = [saveFolder,fileStem,'rois.mat'];
 save(saveFileName,'roiData')
 

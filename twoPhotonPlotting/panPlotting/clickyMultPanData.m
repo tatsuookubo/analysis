@@ -1,4 +1,4 @@
-function [roi_points, greenCountMat] = clickyMultPan(greenMov, Stim, frameTimes,metaFileName,figSuffix,numBlocks,blockNum,varargin)
+function [roi_points, greenCountMat] = clickyMultPanData(greenMov, Stim, frameTimes,metaFileName,figSuffix,numBlocks,blockNum,varargin)
 
 % Lets you select ROIS by left clicking to make a shape then right clicking
 % to finish that shape.
@@ -6,39 +6,12 @@ function [roi_points, greenCountMat] = clickyMultPan(greenMov, Stim, frameTimes,
 % You can select mutliple ROIs.
 % A second right click prevents stops further ROIs from being drawn.
 
-%% Format figure 
-numPlots = ceil((numBlocks+2)/2);
-tracePlotNum = 2+blockNum; 
-
-%% Set colors
-colorindex = 0;
-ColorSet = distinguishable_colors(20,'b');
-purple = [97 69 168]./255;
-
-
-%% Calculate title
-[pathName,fileName] = fileparts(metaFileName);
-flyPath = char(regexp(pathName,'.*(?=\\roi)','match'));
-cd(flyPath)
-exptInfoFile = dir('*exptInfo.mat');
-load(exptInfoFile.name)
-load(metaFileName)
-dateNumber = datenum(exptInfo.dNum,'yymmdd');
-dateAsString = datestr(dateNumber,'mm-dd-yy');
-roiNum = trialMeta.roiNum;
-blockNum = trialMeta.blockNum;
-blockDescription = trialMeta.blockDescrip;
-roiDescription = trialMeta.roiDescrip;
-sumTitle = {dateAsString;exptInfo.prefixCode;['ExpNum ',num2str(exptInfo.expNum)];['FlyNum ',num2str(exptInfo.flyNum)];...
-    ['RoiNum ',num2str(roiNum)];['BlockNum ',num2str(blockNum)];blockDescription;'';''};
-saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 
 %% Calculate pre-stim frame times 
 preStimFrameLog = frameTimes < Stim.startPadDur;
 
 %% Get mean movies
 meanGreenMov = mean(greenMov,4);
-
 
 %% Create reference image
 refimg = mean(meanGreenMov, 3);
@@ -48,8 +21,7 @@ refimg = mean(meanGreenMov, 3);
 numLoops = 1000;
 lastRoiNum = getpref('scimPlotPrefs','lastRoiNum');
 currRoiNum = getpref('scimSavePrefs','roiNum');
-if getpref('scimPlotPrefs','newRoi')
-    disp('New ROI');
+if blockNum == 1; 
     useOldRois = 'n'; 
 else
     prevBlockNum = num2str(blockNum-1,'%03d');
@@ -179,7 +151,7 @@ if ~isdir(saveFolder)
 end
 fileStem = char(regexp(fileName,'.*(?=_trial)','match'));
 saveFileName = [saveFolder,fileStem,'.pdf'];
-mySave(saveFileName);
+mySave(saveFileName,[5 5]);
 
 %% Close figure
 

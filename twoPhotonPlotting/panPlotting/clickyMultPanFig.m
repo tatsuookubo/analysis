@@ -1,10 +1,20 @@
-function [roiData] = clickyMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,varargin)
+function [roi_points, greenCountMat] = clickyMultPanFig(greenMov, Stim, frameTimes,metaFileName,figSuffix,numBlocks,blockNum,varargin)
 
 % Lets you select ROIS by left clicking to make a shape then right clicking
 % to finish that shape.
 % Then plots the fluorescence trace for that ROI
 % You can select mutliple ROIs.
 % A second right click prevents stops further ROIs from being drawn.
+
+%% Format figure 
+numPlots = ceil((numBlocks+2)/2);
+tracePlotNum = 2+blockNum; 
+
+%% Set colors
+colorindex = 0;
+ColorSet = distinguishable_colors(20,'b');
+purple = [97 69 168]./255;
+
 
 %% Calculate title
 [pathName,fileName] = fileparts(metaFileName);
@@ -28,47 +38,40 @@ preStimFrameLog = frameTimes < Stim.startPadDur;
 
 %% Get mean movies
 meanGreenMov = mean(greenMov,4);
-meanRedMov = mean(redMov,4);
+
 
 %% Create reference image
 refimg = mean(meanGreenMov, 3);
 
-%% Set colors
-colorindex = 0;
-ColorSet = distinguishable_colors(20,'b');
-purple = [97 69 168]./255;
 
 %% See if ROIs already exist
 numLoops = 1000;
 lastRoiNum = getpref('scimPlotPrefs','lastRoiNum');
 currRoiNum = getpref('scimSavePrefs','roiNum');
-if getpref('scimPlotPrefs','newRoi')
-    disp('New ROI');
+if blockNum == 1; 
     useOldRois = 'n'; 
 else
     prevBlockNum = num2str(blockNum-1,'%03d');
     roiFileName = [saveFolder,'roiNum',num2str(roiNum,'%03d'),'_blockNum',prevBlockNum,'_rois.mat'];
-    oldRoi = getpref('scimPlotPrefs','roi');
+    roiData.roi = getpref('scimPlotPrefs','roi');
     close all
-    useOldRois = 'y';    
+    useOldRois = 'y';     
 end
 
 %% Plot ref image for future save plot
-figure
+figure(1)
 setCurrentFigurePosition(1)
 set(gca, 'ColorOrder', ColorSet);
 order = get(gca,'ColorOrder');
 
-subplot(2,2,1);
+subplot(numPlots,2,1);
 imshow(refimg, [], 'InitialMagnification', 'fit')
 hold on
 title(roiDescription)
 
 
-
-
 %% Plot stimulus
-h(1) = subplot(2,2,2);
+h(1) = subplot(numPlots,2,2);
 myplot(Stim.timeVec,Stim.stimulus,'Color',purple)
 ylabel('Stimulus (V)')
 set(gca,'xtick',[])
@@ -82,19 +85,18 @@ nframes = size(meanGreenMov, 3);
 
 %% Get ROIs
 nroi = 1;
-roiData.greenCountMat = {};
-roiData.redCountMat = {};
+greenCountMat = {};
 [x, y] = meshgrid(1:xsize, 1:ysize);
 numTrials = size(greenMov,4);
 for j = 1:numLoops
     
-    subplot(2,2,1)
+    subplot(numPlots,2,1)
     %% Draw the ROI
     if strcmp(useOldRois,'y')
-        if j == (length(oldRoi) + 1)
+        if j == (length(roiData.roi) + 1)
             break
         else
-            roiMat = cell2mat(oldRoi(j));
+            roiMat = cell2mat(roiData.roi(j));
             xv = roiMat(:,1);
             yv = roiMat(:,2);
         end
@@ -115,38 +117,26 @@ for j = 1:numLoops
     
     %% Calculate the mean trace within the polygon
     meanGreenFCount = squeeze(sum(sum(meanGreenMov.*repmat(inpoly, [1, 1, nframes]))))/sum(inpoly(:));
-    meanRedFCount = squeeze(sum(sum(meanRedMov.*repmat(inpoly, [1, 1, nframes]))))/sum(inpoly(:));
     for i = 1:numTrials
         greenFCount(i,:) = squeeze(sum(sum(squeeze(greenMov(:,:,:,i)).*repmat(inpoly, [1, 1, nframes]))))/sum(inpoly(:));
-        redFCount(i,:) = squeeze(sum(sum(squeeze(redMov(:,:,:,i)).*repmat(inpoly, [1, 1, nframes]))))/sum(inpoly(:));
     
         greenPreStimBaselineST(i,:) = mean(greenFCount(i,preStimFrameLog));
         greenDeltaFST(i,:) = 100.*((greenFCount(i,:) - greenPreStimBaselineST(i,:))./greenPreStimBaselineST(i,:));
-    
-        redPreStimBaselineST(i,:) = mean(redFCount(i,preStimFrameLog));
-        redDeltaFST(i,:) = 100.*((redFCount(i,:) - redPreStimBaselineST(i,:))./redPreStimBaselineST(i,:));
     
     end
     
     %% Calculate deltaF/F for mean traces 
     greenPreStimBaseline = mean(meanGreenFCount(preStimFrameLog));
     greenDeltaF = 100.*((meanGreenFCount - greenPreStimBaseline)./greenPreStimBaseline);
-    greenBaselineLegend{j} = num2str(greenPreStimBaseline); 
-    
-    redPreStimBaseline = mean(meanRedFCount(preStimFrameLog));
-    redDeltaF = 100.*((meanRedFCount - redPreStimBaseline)./redPreStimBaseline);
-    redBaselineLegend{j} = num2str(redPreStimBaseline); 
-    
+    greenBaselineLegend{j} = num2str(greenPreStimBaseline);   
     
     %% Store traces
-    roiData.greenCountMat{nroi} =  greenFCount';
-    roiData.redCountMat{nroi} = redFCount';
-    roiData.greenDeltaFMat{nroi} = greenDeltaF;
-    roiData.greenStd{nroi} = std(greenDeltaFST); 
+    greenCountMat{nroi} =  greenFCount';
+
     
     %% Plot traces 
     % Plot the green trace
-    h(2) = subplot(2,2,4);
+    h(tracePlotNum) = subplot(numPlots,2,tracePlotNum);
     hold on
     myplot(frameTimes,greenDeltaF,'Color',currcolor,'Linewidth',2);
     if numTrials > 1
@@ -154,31 +144,16 @@ for j = 1:numLoops
     end
     colorindex = colorindex+1;
     xlabel('Time (s)')
-    title('Green Channel')
-    
-    % Plot the red trace
-    h(3) = subplot(2,2,3);
-    hold on
-    myplot(frameTimes,redDeltaF,'Color',currcolor,'Linewidth',2);
-    if numTrials>1 
-        myplot(frameTimes,redDeltaFST,'Color',currcolor,'Linewidth',1,'LineStyle','--');
-    end
-    colorindex = colorindex+1;
+    title(['BlockNum ',num2str(blockNum)])
     ylabel('dF/F')
-    xlabel('Time (s)')
-    title('Red channel')
     
     %% Store the rois
-    roiData.roi{nroi} = [xv, yv];
+    roi_points{nroi} = [xv, yv];
     nroi = nroi + 1;
 end
 
-subplot(2,2,4)
+subplot(numPlots,2,tracePlotNum)
 legend(greenBaselineLegend{:},'Location','Best','FontSize',8)
-legend boxoff
-
-subplot(2,2,3) 
-legend(redBaselineLegend{:},'Location','Best','FontSize',8)
 legend boxoff
 
 %% Figure formatting
@@ -203,8 +178,7 @@ if ~isdir(saveFolder)
 end
 fileStem = char(regexp(fileName,'.*(?=_trial)','match'));
 saveFileName = [saveFolder,fileStem,'.pdf'];
-figSize = [6 5]; 
-mySave(saveFileName,figSize);
+mySave(saveFileName,[5 5]);
 
 %% Close figure
 

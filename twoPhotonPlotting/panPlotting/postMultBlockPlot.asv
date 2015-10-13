@@ -5,7 +5,7 @@ if ~exist('metaFileName','var')
     metaFileName = fullfile(pathName,fileName); 
 end
 if ~exist('figSuffix','var')
-    figSuffix = 'test';
+    figSuffix = 'Online';
 end
 
 %% Perfrom clicky on each trial 
@@ -16,20 +16,17 @@ numBlocks = length(blockFolders);
 close all 
 
 for i = 1:numBlocks
-    blockNum = i;
     cd([roiFolder,'\',blockFolders(i).name])
     trialFiles = dir('*.mat');
-    metaFileName = [trialFiles(1).name; 
-    [greenMov,redMov,~,metaFileName,frameTimes] = loadMeanMovie(metaFileName);
+    metaFileName = [roiFolder,'\',blockFolders(i).name,'\',trialFiles(1).name];
+    [greenMov,~,~,metaFileName,frameTimes] = loadMeanMovie(metaFileName);
     load(metaFileName)
     if i == 1
         [greenCorrected,refFrameGreen] = motionCorrection(greenMov);
-        [redCorrected,refFrameRed] = motionCorrection(redMov);
     else 
         greenCorrected = motionCorrection(greenMov,refFrameGreen);
-        redCorrected = motionCorrection(redMov,refFrameRed);
     end
-    [roi, greenCountMat, redCountMat] = clickyMult(greenCorrected,Stim,frameTimes,metaFileName,figSuffix,numBlocks,blockNum);
+    blockPlot(greenCorrected,Stim,frameTimes,metaFileName,figSuffix,numBlocks);
 
 end
 
