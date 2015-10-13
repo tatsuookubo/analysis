@@ -1,6 +1,5 @@
 function myplot(varargin)
 
-setCurrentFigurePosition(1) 
 plot(varargin{:});
 box off;
 set(gca,'TickDir','out')

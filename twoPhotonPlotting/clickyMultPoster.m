@@ -1,4 +1,4 @@
-function [roi_points, greenCountMat, redCountMat] = clickyMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,varargin)
+function [roiData] = clickyMultPoster(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,varargin)
 
 % Lets you select ROIS by left clicking to make a shape then right clicking
 % to finish that shape.
@@ -19,12 +19,15 @@ roiNum = trialMeta.roiNum;
 blockNum = trialMeta.blockNum;
 blockDescription = trialMeta.blockDescrip;
 roiDescription = trialMeta.roiDescrip;
-sumTitle = {dateAsString;exptInfo.prefixCode;['ExpNum ',num2str(exptInfo.expNum)];['FlyNum ',num2str(exptInfo.flyNum)];...
-    ['RoiNum ',num2str(roiNum)];['BlockNum ',num2str(blockNum)];blockDescription;'';''};
 saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 
 %% Calculate pre-stim frame times 
 preStimFrameLog = frameTimes < Stim.startPadDur;
+
+%% Calculate stim frame times
+postStartPadFrames = find(Stim.startPadDur < frameTimes) ;
+preEndPadFrames = find(frameTimes < (Stim.startPadDur + Stim.stimDur));
+stimFrames = intersect(postStartPadFrames,preEndPadFrames);
 
 %% Get mean movies
 meanGreenMov = mean(greenMov,4);
@@ -48,16 +51,16 @@ if getpref('scimPlotPrefs','newRoi')
 else
     prevBlockNum = num2str(blockNum-1,'%03d');
     roiFileName = [saveFolder,'roiNum',num2str(roiNum,'%03d'),'_blockNum',prevBlockNum,'_rois.mat'];
-    roiData.roi = getpref('scimPlotPrefs','roi');
+    oldRoi = getpref('scimPlotPrefs','roi');
     close all
 %     figure
 %     imshow(refimg, [], 'InitialMagnification', 'fit')
 %     hold on
 %     set(gca, 'ColorOrder', ColorSet);
 %     order = get(gca,'ColorOrder');
-%     for oldRoiNum = 1:length(roiData.roi)
+%     for oldRoiNum = 1:length(oldRoi)
 %         currcolor = order(oldRoiNum,:);
-%         roiMat = cell2mat(roiData.roi(oldRoiNum));
+%         roiMat = cell2mat(oldRoi(oldRoiNum));
 %         xv = roiMat(:,1);
 %         yv = roiMat(:,2);
 %         plot(xv,yv, 'Linewidth', 1,'Color',currcolor);
@@ -69,11 +72,11 @@ end
 
 %% Plot ref image for future save plot
 figure
-setCurrentFigurePosition(1)
+figSize = setFigSize(8,10);
 set(gca, 'ColorOrder', ColorSet);
 order = get(gca,'ColorOrder');
 
-subplot(2,2,1);
+subplot(3,1,1);
 imshow(refimg, [], 'InitialMagnification', 'fit')
 hold on
 title(roiDescription)
@@ -82,12 +85,12 @@ title(roiDescription)
 
 
 %% Plot stimulus
-h(1) = subplot(2,2,2);
+h(1) = subplot(3,1,2);
 myplot(Stim.timeVec,Stim.stimulus,'Color',purple)
 ylabel('Stimulus (V)')
 set(gca,'xtick',[])
 set(gca,'XColor','white')
-title('Stimulus')
+set(gca,'FontSize',14);
 
 
 %% Get image details
@@ -96,19 +99,19 @@ nframes = size(meanGreenMov, 3);
 
 %% Get ROIs
 nroi = 1;
-greenCountMat = {};
-redCountMat = {};
+roiData.greenCountMat = {};
+roiData.redCountMat = {};
 [x, y] = meshgrid(1:xsize, 1:ysize);
 numTrials = size(greenMov,4);
 for j = 1:numLoops
     
-    subplot(2,2,1)
+    subplot(3,1,1)
     %% Draw the ROI
     if strcmp(useOldRois,'y')
-        if j == (length(roiData.roi) + 1)
+        if j == (length(oldRoi) + 1)
             break
         else
-            roiMat = cell2mat(roiData.roi(j));
+            roiMat = cell2mat(oldRoi(j));
             xv = roiMat(:,1);
             yv = roiMat(:,2);
         end
@@ -153,45 +156,35 @@ for j = 1:numLoops
     
     
     %% Store traces
-    greenCountMat{nroi} =  greenFCount';
-    redCountMat{nroi} = redFCount';
+    roiData.greenCountMat{nroi} =  greenFCount';
+    roiData.redCountMat{nroi} = redFCount';
+    roiData.greenDeltaFMat{nroi} = greenDeltaF;
+    roiData.greenStd{nroi} = std(greenDeltaFST);
+    roiData.deltaFInt{nroi} = sum(greenDeltaF(stimFrames));
     
     %% Plot traces 
     % Plot the green trace
-    h(2) = subplot(2,2,4);
+    h(2) = subplot(3,1,3);
     hold on
     myplot(frameTimes,greenDeltaF,'Color',currcolor,'Linewidth',2);
     if numTrials > 1
         myplot(frameTimes,greenDeltaFST,'Color',currcolor,'Linewidth',1,'LineStyle','--');
     end
     colorindex = colorindex+1;
-    xlabel('Time (s)')
-    title('Green Channel')
-    
-    % Plot the red trace
-    h(3) = subplot(2,2,3);
-    hold on
-    myplot(frameTimes,redDeltaF,'Color',currcolor,'Linewidth',2);
-    if numTrials>1 
-        myplot(frameTimes,redDeltaFST,'Color',currcolor,'Linewidth',1,'LineStyle','--');
-    end
-    colorindex = colorindex+1;
     ylabel('dF/F')
     xlabel('Time (s)')
-    title('Red channel')
+    title('Green Channel')    
+    set(gca,'FontSize',14);
     
     %% Store the rois
-    roi_points{nroi} = [xv, yv];
+    roiData.roi{nroi} = [xv, yv];
     nroi = nroi + 1;
 end
 
-subplot(2,2,4)
-legend(greenBaselineLegend{:},'Location','Best','FontSize',8)
-legend boxoff
-
-subplot(2,2,3) 
-legend(redBaselineLegend{:},'Location','Best','FontSize',8)
-legend boxoff
+% subplot(3,1,3)
+% legend(greenBaselineLegend{:},'Location','Best','FontSize',8)
+% legend boxoff
+% set(gca,'FontSize',14);
 
 %% Figure formatting
 spaceplots
@@ -199,23 +192,12 @@ linkaxes(h(:),'x')
 set(gca,'FontName','Calibri')
 set(0,'DefaultFigureColor','w')
 
-%% Add text description
-h = axes('position',[0,0,1,1],'visible','off','Units','normalized');
-hold(h);
-pos = [0.01,0.6, 0.15 0.7];
-ht = uicontrol('Style','Text','Units','normalized','Position',pos,'Fontsize',20,'HorizontalAlignment','left','FontName','Calibri','BackGroundColor','w');
-
-% Wrap string, also returning a new position for ht
-[outstring,newpos] = textwrap(ht,sumTitle);
-set(ht,'String',outstring,'Position',newpos)
-
 %% Save Figure
 if ~isdir(saveFolder)
     mkdir(saveFolder)
 end
 fileStem = char(regexp(fileName,'.*(?=_trial)','match'));
 saveFileName = [saveFolder,fileStem,'.pdf'];
-figSize = [6 5]; 
 mySave(saveFileName,figSize);
 
 %% Close figure
