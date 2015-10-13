@@ -15,4 +15,4 @@ roiCorr(mov)
 
 %% Kmeans 
 k = 4; 
-kmeansCorr(mov,frameRate,k)
+kmeansCorr(greenMov,frameRate,k)
