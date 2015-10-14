@@ -103,7 +103,7 @@ if ~isdir(saveFolder)
     mkdir(saveFolder)
 end
 fileStem = char(regexp(fileName,'.*(?=_trial)','match'));
-saveFileName = [saveFolder,fileStem,'.pdf'];
+saveFileName = [saveFolder,fileStem,'_kmeans.pdf'];
 figSize = [6 5]; 
 mySave(saveFileName,figSize);
 

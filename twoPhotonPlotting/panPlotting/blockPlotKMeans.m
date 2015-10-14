@@ -52,20 +52,6 @@ set(gca,'xtick',[])
 set(gca,'XColor','white')
 title('Stimulus')
 
-    
-%% Draw the ROI
-subplot(numPlots,2,1)
-oldRoi = getpref('scimPlotPrefs','roi');
-numRois = length(oldRoi);
-for j = 1:numRois; 
-    roiMat = cell2mat(oldRoi(j));
-    xv = roiMat(:,1);
-    yv = roiMat(:,2);
-    currcolor = order(j,:);
-    plot(xv, yv, 'Linewidth', 1,'Color',currcolor);
-    text(mean(xv),mean(yv),num2str(j),'Color',currcolor,'FontSize',12);
-end
-
 
 %% Plot traces
 % Plot the green trace
@@ -79,6 +65,9 @@ for i = 1:numBlocks
     dataFileName = [saveFolder,fileStem,'blockNum',num2str(i,'%03d'),'_rois.mat'];
     load(dataFileName)
     for j = 1:numRois
+        for k = 1:kmeansData.k
+            myplot(frameTimes, kmeansData.traces(k,:), 'color', kmeansData.colorMat(k,:) , 'DisplayName', ['Cluster: ' num2str(k)],'Linewidth',2);
+        end
         currcolor = order(j,:);
         myplot(frameTimes,roiData.greenDeltaFMat{j},'Color',currcolor,'Linewidth',2);
         greenTrace = roiData(1).greenDeltaFMat{j};
@@ -117,7 +106,7 @@ if ~isdir(saveFolder)
     mkdir(saveFolder)
 end
 fileStem = char(regexp(fileName,'.*(?=_block)','match'));
-saveFileName = [saveFolder,fileStem,'_summaryFig.pdf'];
+saveFileName = [saveFolder,fileStem,'_kmeansSummaryFig.pdf'];
 figSize = [6 5]; 
 mySave(saveFileName,figSize);
 
