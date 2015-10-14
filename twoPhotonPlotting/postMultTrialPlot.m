@@ -19,7 +19,8 @@ redCorrected = motionCorrection(redMov);
 [kmeansData] = kmeansMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,frameRate,varargin);
 
 %% Save plot data 
-setpref('scimPlotPrefs','idx_img',kmeansData.idx_img,'colorMat',kmeansData.colorMat)
+setpref('scimPlotPrefs','idx_img',kmeansData.idx_img);
+setpref('scimPlotPrefs','colorMat',kmeansData.colorMat);
 setpref('scimPlotPrefs','roi',roiData.roi);
 roiData.frameTime = frameTimes; 
 

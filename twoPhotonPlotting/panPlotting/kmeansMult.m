@@ -55,6 +55,7 @@ order = get(gca,'ColorOrder');
 %% Plot kmeans clusters 
 subplot(2,2,1);
 imagesc(idx_img);
+axis square
 title('Kmeans clusters');
 lutbar
 
