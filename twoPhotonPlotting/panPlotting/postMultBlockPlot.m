@@ -23,6 +23,8 @@ load(metaFileName)
 [greenCorrected,refFrameGreen] = motionCorrection(greenMov);
 blockPlot(greenCorrected,Stim,frameTimes,metaFileName,figSuffix,numBlocks);
 
+blockPlotKmeans(greenCorrected,Stim,frameTimes,metaFileName,figSuffix,numBlocks);
+
 
 
 
