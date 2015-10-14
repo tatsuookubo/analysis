@@ -37,11 +37,21 @@ numPlots = ceil((numBlocks+2)/2);
 
 %% Plot cluster image
 subplot(numPlots,2,1);
+colormap jet;
 idx_img = getpref('scimPlotPrefs','idx_img');
-imagesc(idx_img);
+imshow(idx_img,[],'InitialMagnification', 'fit');
 axis square
 title('Kmeans clusters');
 lutbar
+title(roiDescription)
+freezeColors
+
+%% Plot reference image
+subplot(numPlots,2,3);
+meanGreenMov = mean(greenMov,4);
+refimg = mean(meanGreenMov, 3);
+imshow(refimg, [], 'InitialMagnification', 'fit')
+hold on
 title(roiDescription)
 
 %% Plot stimulus
@@ -60,28 +70,20 @@ preStimFrameLog = frameTimes < Stim.startPadDur;
 
 fileStem = char(regexp(fileName,'.*(?=blockNum)','match'));
 for i = 1:numBlocks 
-    h(2) = subplot(numPlots,2,i+2);
+    h(2) = subplot(numPlots,2,i+3);
     hold on
     dataFileName = [saveFolder,fileStem,'blockNum',num2str(i,'%03d'),'_rois.mat'];
     load(dataFileName)
-    for j = 1:numRois
-        for k = 1:kmeansData.k
-            myplot(frameTimes, kmeansData.traces(k,:), 'color', kmeansData.colorMat(k,:) , 'DisplayName', ['Cluster: ' num2str(k)],'Linewidth',2);
-        end
-        currcolor = order(j,:);
-        myplot(frameTimes,roiData.greenDeltaFMat{j},'Color',currcolor,'Linewidth',2);
-        greenTrace = roiData(1).greenDeltaFMat{j};
-        greenBaselineLegend{j} = num2str(mean(greenTrace(preStimFrameLog)));
+    for k = 1:kmeansData.k
+        myplot(frameTimes, kmeansData.traces(k,:), 'color', kmeansData.colorMat(k,:) , 'DisplayName', ['Cluster: ' num2str(k)],'Linewidth',2);
     end
     title(['Block ',num2str(i)])
     if i == 1
-        ylabel('dF/F')
+        ylabel('Avg F count')
     end
     if i == numBlocks 
         xlabel('Time (s)')
     end
-    legend(greenBaselineLegend{:},'Location','Best','FontSize',8)
-    legend boxoff
 end
 
 

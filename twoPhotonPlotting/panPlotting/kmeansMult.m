@@ -28,7 +28,7 @@ meanGreenMov = mean(greenMov,4);
 
 %% Get cluster data 
 k = 4; 
-if getpref('scimPlotPrefs','newRoi')
+if blockNum == 1
     [idx_img, traces, colorMat] = kmeansCorr(meanGreenMov,frameRate,k);
 else
     idx_img = getpref('scimPlotPrefs','idx_img');
@@ -54,10 +54,19 @@ order = get(gca,'ColorOrder');
 
 %% Plot kmeans clusters 
 subplot(2,2,1);
-imagesc(idx_img);
+imshow(idx_img,[],'InitialMagnification', 'fit');
+colormap jet;
 axis square
 title('Kmeans clusters');
 lutbar
+freezeColors
+
+%% Plot ref image for future save plot
+subplot(2,2,3);
+refimg = mean(meanGreenMov, 3);
+imshow(refimg, [], 'InitialMagnification', 'fit')
+hold on
+title(roiDescription)
 
 %% Plot stimulus
 h(1) = subplot(2,2,2);

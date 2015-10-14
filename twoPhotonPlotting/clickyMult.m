@@ -40,20 +40,15 @@ purple = [97 69 168]./255;
 
 %% See if ROIs already exist
 numLoops = 1000;
-lastRoiNum = getpref('scimPlotPrefs','lastRoiNum');
-currRoiNum = getpref('scimSavePrefs','roiNum');
-if getpref('scimPlotPrefs','newRoi')
-    disp('New ROI');
+if blockNum == 1
     useOldRois = 'n'; 
 else
-    prevBlockNum = num2str(blockNum-1,'%03d');
-    roiFileName = [saveFolder,'roiNum',num2str(roiNum,'%03d'),'_blockNum',prevBlockNum,'_rois.mat'];
     oldRoi = getpref('scimPlotPrefs','roi');
-    close all
     useOldRois = 'y';    
 end
 
 %% Plot ref image for future save plot
+close all
 figure
 setCurrentFigurePosition(1)
 set(gca, 'ColorOrder', ColorSet);
