@@ -32,14 +32,18 @@ ColorSet = distinguishable_colors(20,'b');
 set(gca, 'ColorOrder', ColorSet);
 order = get(gca,'ColorOrder');
 purple = [97 69 168]./255;
-numPlots = ceil((numBlocks+2)/2); 
+
+fileStem = char(regexp(fileName,'.*(?=blockNum)','match'));
+dataFileName = [saveFolder,fileStem,'blockNum',num2str(1,'%03d'),'_rois.mat'];
+load(dataFileName)
+numPlots = ceil((kmeansData.k+3)/2); 
 
 
 %% Plot cluster image
 subplot(numPlots,2,1);
-colormap jet;
 idx_img = getpref('scimPlotPrefs','idx_img');
 imshow(idx_img,[],'InitialMagnification', 'fit');
+colormap jet;
 axis square
 title('Kmeans clusters');
 lutbar
@@ -66,18 +70,19 @@ title('Stimulus')
 %% Plot traces
 % Plot the green trace
 % Calculate pre-stim frame times 
-preStimFrameLog = frameTimes < Stim.startPadDur;
-
-fileStem = char(regexp(fileName,'.*(?=blockNum)','match'));
 for i = 1:numBlocks 
-    h(2) = subplot(numPlots,2,i+3);
-    hold on
     dataFileName = [saveFolder,fileStem,'blockNum',num2str(i,'%03d'),'_rois.mat'];
     load(dataFileName)
     for k = 1:kmeansData.k
-        myplot(frameTimes, kmeansData.traces(k,:), 'color', kmeansData.colorMat(k,:) , 'DisplayName', ['Cluster: ' num2str(k)],'Linewidth',2);
+        h(2) = subplot(numPlots,2,k+3);
+        hold on
+        currcolor = order(i,:);
+        myplot(frameTimes, kmeansData.traces(k,:), 'color', currcolor , 'DisplayName', ['Cluster: ' num2str(k)],'Linewidth',2);
+        title(['Cluster ',num2str(k)])
     end
-    title(['Block ',num2str(i)])
+    blockNumStr = cellstr(num2str([1:numBlocks]'));
+    legend(blockNumStr{:},'Location','Best')
+    legend boxoff
     if i == 1
         ylabel('Avg F count')
     end

@@ -27,7 +27,7 @@ saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 meanGreenMov = mean(greenMov,4);
 
 %% Get cluster data 
-k = 4; 
+k = 6; 
 if blockNum == 1
     [idx_img, traces, colorMat] = kmeansCorr(meanGreenMov,frameRate,k);
 else

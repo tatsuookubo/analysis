@@ -32,7 +32,11 @@ ColorSet = distinguishable_colors(20,'b');
 set(gca, 'ColorOrder', ColorSet);
 order = get(gca,'ColorOrder');
 purple = [97 69 168]./255;
-numPlots = ceil((numBlocks+2)/2); 
+
+oldRoi = getpref('scimPlotPrefs','roi');
+numRois = length(oldRoi);
+
+numPlots = ceil((numRois+2)/2); 
 
 
 %% Plot ref image for future save plot
@@ -55,8 +59,6 @@ title('Stimulus')
     
 %% Draw the ROI
 subplot(numPlots,2,1)
-oldRoi = getpref('scimPlotPrefs','roi');
-numRois = length(oldRoi);
 for j = 1:numRois; 
     roiMat = cell2mat(oldRoi(j));
     xv = roiMat(:,1);
@@ -71,18 +73,17 @@ end
 % Plot the green trace
 % Calculate pre-stim frame times 
 preStimFrameLog = frameTimes < Stim.startPadDur;
-
 fileStem = char(regexp(fileName,'.*(?=blockNum)','match'));
 for i = 1:numBlocks 
-    h(2) = subplot(numPlots,2,i+2);
-    hold on
     dataFileName = [saveFolder,fileStem,'blockNum',num2str(i,'%03d'),'_rois.mat'];
     load(dataFileName)
     for j = 1:numRois
-        currcolor = order(j,:);
+        h(2) = subplot(numPlots,2,j+2);
+        hold on
+        currcolor = order(i,:);
         myplot(frameTimes,roiData.greenDeltaFMat{j},'Color',currcolor,'Linewidth',2);
         greenTrace = roiData(1).greenDeltaFMat{j};
-        greenBaselineLegend{j} = num2str(mean(greenTrace(preStimFrameLog)));
+%         greenBaselineLegend{j} = num2str(mean(greenTrace(preStimFrameLog)));
     end
     title(['Block ',num2str(i)])
     if i == 1
@@ -91,7 +92,8 @@ for i = 1:numBlocks
     if i == numBlocks 
         xlabel('Time (s)')
     end
-    legend(greenBaselineLegend{:},'Location','Best','FontSize',8)
+    blockNumStr = cellstr(num2str([1:numBlocks]'));
+    legend(blockNumStr{:},'Location','Best')
     legend boxoff
 end
 

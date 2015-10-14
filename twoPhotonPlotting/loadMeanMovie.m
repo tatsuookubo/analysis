@@ -34,13 +34,24 @@ numPx = size(im1);
 %% Read in image
 mov = zeros([numPx(:); numChans; numFrames; numMovies]', 'double');  %preallocate 3-D array
 for movNum = 1:numMovies
-    for frame=1:numFrames
-        for chan = 1:numChans
-            [mov(:,:,chan,frame,movNum)] = imread(fullfile(pathName,imageFiles(movNum).name),'tiff',...
-                'Index',(2*(frame-1)+chan),'Info',imInfo);
+    try 
+        for frame=1:numFrames
+            for chan = 1:numChans
+                [mov(:,:,chan,frame,movNum)] = imread(fullfile(pathName,imageFiles(movNum).name),'tiff',...
+                    'Index',(2*(frame-1)+chan),'Info',imInfo);
+            end
+        end
+    catch
+        numFrames = numFrames -1;
+        for frame=1:numFrames
+            for chan = 1:numChans
+                [mov(:,:,chan,frame,movNum)] = imread(fullfile(pathName,imageFiles(movNum).name),'tiff',...
+                    'Index',(2*(frame-1)+chan),'Info',imInfo);
+            end
         end
     end
 end
+
 
 %% Image processing
 % Remove the last line where the image doesn't change
