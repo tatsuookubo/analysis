@@ -35,7 +35,7 @@ refimg = mean(meanGreenMov, 3);
 
 %% Set colors
 colorindex = 0;
-ColorSet = distinguishable_colors(20,'b');
+ColorSet = distinguishable_colors(20,{'b';'w'});
 purple = [97 69 168]./255;
 
 %% See if ROIs already exist

@@ -28,7 +28,7 @@ close all
 figure
 setCurrentFigurePosition(1)
 colorindex = 0;
-ColorSet = distinguishable_colors(20,'b');
+ColorSet = distinguishable_colors(20,{'b';'w'});
 set(gca, 'ColorOrder', ColorSet);
 order = get(gca,'ColorOrder');
 purple = [97 69 168]./255;
