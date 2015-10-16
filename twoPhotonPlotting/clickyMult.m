@@ -48,7 +48,6 @@ else
 end
 
 %% Plot ref image for future save plot
-close all
 figure
 setCurrentFigurePosition(1)
 set(gca, 'ColorOrder', ColorSet);

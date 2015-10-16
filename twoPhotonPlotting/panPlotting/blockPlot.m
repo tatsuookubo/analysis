@@ -99,7 +99,7 @@ end
 
 
 %% Figure formatting
-spaceplots
+% spaceplots
 linkaxes(h(:),'x')
 set(gca,'FontName','Calibri')
 set(0,'DefaultFigureColor','w')

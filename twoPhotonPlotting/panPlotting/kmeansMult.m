@@ -24,7 +24,16 @@ sumTitle = {dateAsString;exptInfo.prefixCode;['ExpNum ',num2str(exptInfo.expNum)
 saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 
 %% Get mean movies
-meanGreenMov = mean(greenMov,4);
+meanGreenMovCount = squeeze(mean(greenMov,4));
+
+%% Make movie a movie of dF/F 
+% Calculate pre-stim frame times 
+preStimFrameLog = frameTimes < Stim.startPadDur;
+greenPreStimBaseline = mean(meanGreenMovCount(:,:,preStimFrameLog),3);
+numFrames = length(frameTimes);
+baselineMov = repmat(greenPreStimBaseline,[1,1,numFrames]); 
+meanGreenMov = 100.*((meanGreenMovCount - baselineMov)./baselineMov);
+ 
 
 %% Get cluster data 
 k = 6; 
