@@ -17,10 +17,16 @@ dateNumber = datenum(exptInfo.dNum,'yymmdd');
 dateAsString = datestr(dateNumber,'mm-dd-yy');
 roiNum = trialMeta.roiNum;
 blockNum = trialMeta.blockNum;
-blockDescription = trialMeta.blockDescrip;
+if isfield(trialMeta,'probePos')
+    probePos = trialMeta.probePos;
+elseif isfield(trialMeta,'blockDescrip')
+    probePos = trialMeta.blockDescrip;
+else
+    probePos = ''; 
+end
 roiDescription = trialMeta.roiDescrip;
 sumTitle = {dateAsString;exptInfo.prefixCode;['ExpNum ',num2str(exptInfo.expNum)];['FlyNum ',num2str(exptInfo.flyNum)];...
-    ['RoiNum ',num2str(roiNum)];['BlockNum ',num2str(blockNum)];blockDescription;'';''};
+    ['RoiNum ',num2str(roiNum)];['BlockNum ',num2str(blockNum)];['probe ',probePos];'';''};
 saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 
 %% Calculate pre-stim frame times 

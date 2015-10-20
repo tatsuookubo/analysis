@@ -15,7 +15,7 @@ greenCorrected = motionCorrection(greenMov);
 redCorrected = motionCorrection(redMov); 
 
 %% Perfrom kmeans
-[kmeansData] = kmeansMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,frameRate,varargin);
+[kmeansData] = kmeansMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,frameRate);
 [roiData] = clickyMult(greenCorrected,redCorrected,Stim,frameTimes,metaFileName,figSuffix);
 
 %% Save plot data 

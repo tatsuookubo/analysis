@@ -17,10 +17,10 @@ dateNumber = datenum(exptInfo.dNum,'yymmdd');
 dateAsString = datestr(dateNumber,'mm-dd-yy');
 roiNum = trialMeta.roiNum;
 blockNum = trialMeta.blockNum;
-blockDescription = trialMeta.blockDescrip;
+probePos = trialMeta.probePos;
 roiDescription = trialMeta.roiDescrip;
 sumTitle = {dateAsString;exptInfo.prefixCode;['ExpNum ',num2str(exptInfo.expNum)];['FlyNum ',num2str(exptInfo.flyNum)];...
-    ['RoiNum ',num2str(roiNum)];['BlockNum ',num2str(blockNum)];blockDescription;'';''};
+    ['RoiNum ',num2str(roiNum)];['BlockNum ',num2str(blockNum)];['probe ',probePos];'';''};
 saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 
 %% Format figure
