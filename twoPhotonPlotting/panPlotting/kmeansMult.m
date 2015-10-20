@@ -48,7 +48,7 @@ if blockNum == 1
 else
     idx_img = getpref('scimPlotPrefs','idx_img');
     colorMat = getpref('scimPlotPrefs','colorMat'); 
-    for i = 1:k
+    for i = unique(idx_img)
         pix_idx = reshape( idx_img, [ size(idx_img,1)*size(idx_img,2) 1 ]);
         kmat = reshape(meanGreenMov, [size(meanGreenMov,1)*size(meanGreenMov,2) size(meanGreenMov,3)] );
         clustIdx = find(pix_idx == i);

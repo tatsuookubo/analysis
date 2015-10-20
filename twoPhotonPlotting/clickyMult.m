@@ -174,11 +174,11 @@ for j = 1:numLoops
 end
 
 subplot(2,2,4)
-legend(greenBaselineLegend{:},'Location','Best','FontSize',8)
+legend(greenBaselineLegend{:},'Location','Best')
 legend boxoff
 
 subplot(2,2,3) 
-legend(redBaselineLegend{:},'Location','Best','FontSize',8)
+legend(redBaselineLegend{:},'Location','Best')
 legend boxoff
 
 %% Figure formatting

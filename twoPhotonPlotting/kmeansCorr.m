@@ -79,7 +79,7 @@ for i=clustToPlot
     plot(t, traces(clustCount,:), 'color', colorMat(clustCount,:) , 'DisplayName', ['Cluster: ' num2str(i)]);
     clustCount = clustCount + 1; 
 end
-legend(cellstr(num2str([1:k]')))
+% legend(cellstr(num2str([1:k]')))
 title('Mean traces for each Kmeans cluster');
 
 end
