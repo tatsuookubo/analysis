@@ -45,8 +45,11 @@ ColorSet = distinguishable_colors(20,{'b';'w'});
 purple = [97 69 168]./255;
 
 %% See if ROIs already exist
+roiPath = char(regexp(pathName,'.*(?=\\block)','match'));
+cd(roiPath)
+blockList = dir('block*');
 numLoops = 1000;
-if blockNum == 1
+if length(blockList) == 1
     useOldRois = 'n'; 
 else
     oldRoi = getpref('scimPlotPrefs','roi');

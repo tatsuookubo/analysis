@@ -43,15 +43,20 @@ meanGreenMov = 100.*((meanGreenMovCount - baselineMov)./baselineMov);
 
 %% Get cluster data 
 k = 6; 
-if blockNum == 1
+roiPath = char(regexp(pathName,'.*(?=\\block)','match'));
+cd(roiPath)
+blockList = dir('block*');
+if length(blockList) == 1
     [idx_img, traces, colorMat] = kmeansCorr(meanGreenMov,frameRate,k);
 else
     idx_img = getpref('scimPlotPrefs','idx_img');
     colorMat = getpref('scimPlotPrefs','colorMat'); 
-    for i = unique(idx_img)
+    uniqueInd = unique(idx_img);
+    for i = 1:length(uniqueInd)
+        currIdx = uniqueInd(i);
         pix_idx = reshape( idx_img, [ size(idx_img,1)*size(idx_img,2) 1 ]);
         kmat = reshape(meanGreenMov, [size(meanGreenMov,1)*size(meanGreenMov,2) size(meanGreenMov,3)] );
-        clustIdx = find(pix_idx == i);
+        clustIdx = find(pix_idx == currIdx);
         traces(i,:) = mean(kmat(clustIdx,:));
     end
 end
