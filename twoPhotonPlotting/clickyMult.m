@@ -134,11 +134,9 @@ for j = 1:numLoops
     %% Calculate deltaF/F for mean traces 
     greenPreStimBaseline = mean(meanGreenFCount(preStimFrameLog));
     greenDeltaF = 100.*((meanGreenFCount - greenPreStimBaseline)./greenPreStimBaseline);
-    greenBaselineLegend{j} = num2str(greenPreStimBaseline); 
     
     redPreStimBaseline = mean(meanRedFCount(preStimFrameLog));
     redDeltaF = 100.*((meanRedFCount - redPreStimBaseline)./redPreStimBaseline);
-    redBaselineLegend{j} = num2str(redPreStimBaseline); 
     
     
     %% Store traces
@@ -151,7 +149,7 @@ for j = 1:numLoops
     % Plot the green trace
     h(2) = subplot(2,2,4);
     hold on
-    myplot(frameTimes,greenDeltaF,'Color',currcolor,'Linewidth',2);
+    p(i) = myplot(frameTimes,greenDeltaF,'Color',currcolor,'Linewidth',2,'DisplayName',num2str(greenPreStimBaseline));
     if numTrials > 1
         myplot(frameTimes,greenDeltaFST,'Color',currcolor,'Linewidth',1,'LineStyle','--');
     end
@@ -162,7 +160,7 @@ for j = 1:numLoops
     % Plot the red trace
     h(3) = subplot(2,2,3);
     hold on
-    myplot(frameTimes,redDeltaF,'Color',currcolor,'Linewidth',2);
+    q(i) = myplot(frameTimes,redDeltaF,'Color',currcolor,'Linewidth',2,'DisplayName',num2str(redPreStimBaseline));
     if numTrials>1 
         myplot(frameTimes,redDeltaFST,'Color',currcolor,'Linewidth',1,'LineStyle','--');
     end
@@ -177,11 +175,11 @@ for j = 1:numLoops
 end
 
 subplot(2,2,4)
-legend(greenBaselineLegend{:},'Location','Best')
+legend(p(:),'Location','Best')
 legend boxoff
 
 subplot(2,2,3) 
-legend(redBaselineLegend{:},'Location','Best')
+legend(q(:),'Location','Best')
 legend boxoff
 
 %% Figure formatting
