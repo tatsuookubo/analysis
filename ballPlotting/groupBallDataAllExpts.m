@@ -10,5 +10,9 @@ cd(fileStem);
 expNumList = dir('flyExp*');
 for i = 1:length(expNumList)
     flyExpNum = str2num(char(regexp(expNumList(i).name,'(?<=flyExpNum).*','match')));
-    groupBallDataPostHoc(prefixCode,expNum,flyNum,flyExpNum)
+    if expNum <= 9
+        groupBallDataPostHoc(prefixCode,expNum,flyNum,flyExpNum)
+    else 
+        groupBallDataDiffStim(prefixCode,expNum,flyNum,flyExpNum)
+    end
 end
