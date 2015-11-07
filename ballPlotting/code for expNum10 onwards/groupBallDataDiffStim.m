@@ -20,13 +20,25 @@ for i = 1:length(dirCont)
     groupedData.xDisp{trialNum} = downsample(procData.disp(:,1),dsFactor,dsPhaseShift);
     groupedData.yDisp{trialNum} = downsample(procData.disp(:,2),dsFactor,dsPhaseShift);
     groupedData.dsTime{trialMeta.stimNum} = downsample(Stim.timeVec,400,200);
-    groupedData.stim{trialMeta.stimNum} = downsample(Stim.stimulus,400,200);
+    groupedData.stim{trialMeta.stimNum} = Stim.stimulus;
+    groupedData.stimTimeVect{trialMeta.stimNum} = Stim.timeVec; 
     groupedData.stimNum(trialNum) = trialMeta.stimNum;
+    groupedData.stimStartPadDur{trialMeta.stimNum} = Stim.startPadDur; 
+    groupedData.stimDur{trialMeta.stimNum} = Stim.stimDur;
+    % Take the middle chunk of the trial 
+    timeBefore = 0.3;
+    pipStartInd = Stim.startPadDur*Stim.sampleRate/dsFactor + 1;
+    indBefore = pipStartInd - timeBefore*Stim.sampleRate/dsFactor;
+    indAfter = pipStartInd + timeBefore*Stim.sampleRate/dsFactor;
+    temp.xDisp = groupedData.xDisp{trialNum}; 
+    temp.yDisp = groupedData.yDisp{trialNum};
+    groupedData.midChunk.xDisp{trialNum} = temp.xDisp(indBefore:indAfter);
+    groupedData.midChunk.yDisp{trialNum} = temp.yDisp(indBefore:indAfter);
     % Find trials to remove 
     Vxy = sqrt((groupedData.xVel{trialNum}.^2)+(groupedData.yVel{trialNum}.^2));
     avgResultantVelocity = mean(Vxy);
     groupedData.trialsToInclude(trialNum) = 3<avgResultantVelocity && avgResultantVelocity<50;
-    clear procData
+    clear procData temp
 end
 
 fileName = [path,fileNamePreamble,'groupedData.mat'];
