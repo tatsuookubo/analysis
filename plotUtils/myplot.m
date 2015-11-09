@@ -1,6 +1,6 @@
-function myplot(varargin)
+function h = myplot(varargin)
 
-plot(varargin{:});
+h = plot(varargin{:});
 box off;
 set(gca,'TickDir','out')
 set(0,'DefaultFigureColor','w')

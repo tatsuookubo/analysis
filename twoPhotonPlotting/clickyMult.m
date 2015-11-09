@@ -151,7 +151,7 @@ for j = 1:numLoops
     hold on
     p(i) = myplot(frameTimes,greenDeltaF,'Color',currcolor,'Linewidth',2,'DisplayName',num2str(greenPreStimBaseline));
     if numTrials > 1
-        myplot(frameTimes,greenDeltaFST,'Color',currcolor,'Linewidth',1,'LineStyle','--');
+        p(i) = myplot(frameTimes,greenDeltaFST,'Color',currcolor,'Linewidth',1,'LineStyle','--');
     end
     colorindex = colorindex+1;
     xlabel('Time (s)')
@@ -162,7 +162,7 @@ for j = 1:numLoops
     hold on
     q(i) = myplot(frameTimes,redDeltaF,'Color',currcolor,'Linewidth',2,'DisplayName',num2str(redPreStimBaseline));
     if numTrials>1 
-        myplot(frameTimes,redDeltaFST,'Color',currcolor,'Linewidth',1,'LineStyle','--');
+        q(i) = myplot(frameTimes,redDeltaFST,'Color',currcolor,'Linewidth',1,'LineStyle','--');
     end
     colorindex = colorindex+1;
     ylabel('dF/F')
