@@ -22,9 +22,10 @@ load(metaFileName);
 %% Load image data 
 % Get image info
 warning('off','MATLAB:imagesci:tiffmexutils:libtiffWarning')
-[header,~] = scim_openTif(imageFileName);
-frameRate = header.acq.frameRate;
+% [header,~] = scim_openTif(imageFileName); 
+% frameRate = header.acq.frameRate;
 imInfo = imfinfo(imageFileName);
+frameRate = str2num(char(regexp(imInfo(1).ImageDescription,'(?<=state.acq.frameRate=).*(?=state.acq.zoom)','match')));
 chans = regexp(imInfo(1).ImageDescription,'state.acq.acquiringChannel\d=1');
 numChans = length(chans);
 numFrames = round(length(imInfo)/numChans);

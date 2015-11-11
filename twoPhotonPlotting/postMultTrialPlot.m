@@ -11,8 +11,8 @@ end
 %% Perfrom clicky on each trial 
 [greenMov,redMov,frameRate,metaFileName,frameTimes] = loadMeanMovie(metaFileName);
 load(metaFileName)
-greenCorrected = motionCorrection(greenMov); 
-redCorrected = motionCorrection(redMov); 
+greenCorrected = motionCorrection(greenMov,metaFileName,frameTimes); 
+redCorrected = motionCorrection(redMov,metaFileName); 
 
 %% Perfrom kmeans
 [kmeansData] = kmeansMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,frameRate);
