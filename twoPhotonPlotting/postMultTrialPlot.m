@@ -15,8 +15,8 @@ greenCorrected = motionCorrection(greenMov,metaFileName,frameTimes);
 redCorrected = motionCorrection(redMov,metaFileName); 
 
 %% Perfrom kmeans
-[kmeansData] = kmeansMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,frameRate);
-[roiData] = clickyMult(greenMov,redCorrected,Stim,frameTimes,metaFileName,figSuffix);
+[kmeansData] = kmeansMult(greenCorrected,redCorrected, Stim, frameTimes,metaFileName,figSuffix,frameRate);
+[roiData] = clickyMult(greenCorrected,redCorrected,Stim,frameTimes,metaFileName,figSuffix);
 
 %% Save plot data 
 setpref('scimPlotPrefs','idx_img',kmeansData.idx_img);
