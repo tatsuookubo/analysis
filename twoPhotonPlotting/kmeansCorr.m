@@ -5,22 +5,23 @@ function [idx_img, traces, colorMat] = kmeansCorr(mov,frameRate,k)
 
 %% Remove pixels that have low std 
 kmat = reshape(mov, [size(mov,1)*size(mov,2) size(mov,3)] );
-% stds = std(kmat,0,2);
-% 
-% figure
-% hist(stds,100)
-% xlabel('Std')
-% ylabel('Counts')
-% [cutoff,~] = ginput(1);
-% close all
-% 
-% highStdInd = find(stds>cutoff); 
-% kmat2 = kmat(highStdInd,:); 
+stds = std(kmat,0,2);
+
+figure
+hist(stds,100)
+xlabel('Std')
+ylabel('Counts')
+[cutoff,~] = ginput(1);
+close all
+
+highStdInd = find(stds>cutoff); 
+kmat2 = kmat(highStdInd,:); 
 
 %% Perfom kmeans 
-[IDX] = kmeans( kmat , k ,'distance','correlation');
+% [IDX] = kmeans( kmat , k ,'distance','correlation');
 % s = silhouette(kmat,IDX,'correlation');
-% [IDX] = kmeans( kmat2 , k ,'distance','correlation');
+IDX = (k+1).*ones(size(kmat));
+[IDX(highStdInd)] = kmeans( kmat2 , k ,'distance','correlation');
 
 %% Calculate the within-cluster correlation 
 for i=1:k

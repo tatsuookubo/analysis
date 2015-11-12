@@ -4,9 +4,24 @@ if ~exist('metaFileName','var')
     [fileName,pathName] = uigetfile;
     metaFileName = fullfile(pathName,fileName); 
 end
+
+[pathName, fileName] = fileparts(metaFileName); 
+flyPath = char(regexp(pathName,'.*(?=\\roi)','match'));
+fileStem = char(regexp(fileName,'.*(?=block)','match'));
+
 if ~exist('figSuffix','var')
-    figSuffix = 'test';
+    figSuffix = 'Offline';
+    folderCount = 1; 
+    saveFolder = [flyPath,'\Figures\',figSuffix,num2str(folderCount,'%03d'),'\']; 
+    while isdir(saveFolder) 
+        folderCount = folderCount + 1;
+        saveFolder = [flyPath,'\Figures\',figSuffix,num2str(folderCount,'%03d'),'\']; 
+    end
+else 
+    saveFolder = [flyPath,'\Figures\',figSuffix,'\']; 
 end
+
+analysisDataFileName = [saveFolder,fileStem,'analysisData.mat'];
 
 %% Perfrom clicky on each trial 
 [greenMov,redMov,frameRate,metaFileName,frameTimes] = loadMeanMovie(metaFileName);
@@ -15,21 +30,12 @@ greenCorrected = motionCorrection(greenMov,metaFileName,frameTimes);
 redCorrected = motionCorrection(redMov,metaFileName); 
 
 %% Perfrom kmeans
-[kmeansData] = kmeansMult(greenCorrected,redCorrected, Stim, frameTimes,metaFileName,figSuffix,frameRate);
-[roiData] = clickyMult(greenCorrected,redCorrected,Stim,frameTimes,metaFileName,figSuffix);
+[kmeansData] = kmeansMult(greenCorrected,redCorrected, Stim, frameTimes,metaFileName,figSuffix,frameRate,analysisDataFileName);
+[roiData] = clickyMult(greenCorrected,redCorrected,Stim,frameTimes,metaFileName,figSuffix,analysisDataFileName);
 
 %% Save plot data 
-setpref('scimPlotPrefs','idx_img',kmeansData.idx_img);
-setpref('scimPlotPrefs','colorMat',kmeansData.colorMat);
-setpref('scimPlotPrefs','roi',roiData.roi);
-roiData.frameTime = frameTimes; 
-
-[pathName, fileName] = fileparts(metaFileName); 
-flyPath = char(regexp(pathName,'.*(?=\\roi)','match'));
-fileStem = char(regexp(fileName,'.*(?=trial)','match'));
-saveFolder = [flyPath,'\Figures\',figSuffix,'\']; 
-saveFileName = [saveFolder,fileStem,'rois.mat'];
-save(saveFileName,'roiData','kmeansData')
+% roiData.frameTime = frameTimes; 
+% save(analysisDataFileName,'roiData','kmeansData')
 
 
 

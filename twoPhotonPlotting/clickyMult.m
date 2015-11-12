@@ -1,4 +1,4 @@
-function [roiData] = clickyMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,varargin)
+function [roiData] = clickyMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,analysisDataFileName,varargin)
 
 % Lets you select ROIS by left clicking to make a shape then right clicking
 % to finish that shape.

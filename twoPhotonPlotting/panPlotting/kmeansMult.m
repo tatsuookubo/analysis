@@ -1,4 +1,4 @@
-function [kmeansData] = kmeansMult(greenMov,~, Stim, frameTimes,metaFileName,figSuffix,frameRate,varargin)
+function [kmeansData] = kmeansMult(greenMov,~, Stim, frameTimes,metaFileName,figSuffix,frameRate,analysisDataFileName,varargin)
 
 % Lets you select ROIS by left clicking to make a shape then right clicking
 % to finish that shape.
@@ -31,6 +31,7 @@ saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 
 %% Get mean movies
 meanGreenMovCount = squeeze(mean(greenMov,4));
+meanGreenMov = squeeze(mean(greenMov,4));
 
 %% Make movie a movie of dF/F 
 % Calculate pre-stim frame times 
@@ -46,11 +47,13 @@ k = 6;
 roiPath = char(regexp(pathName,'.*(?=\\block)','match'));
 cd(roiPath)
 blockList = dir('block*');
-if length(blockList) == 1
+if ~exist(analysisDataFileName,'file')
     [idx_img, traces, colorMat] = kmeansCorr(meanGreenMov,frameRate,k);
 else
-    idx_img = getpref('scimPlotPrefs','idx_img');
-    colorMat = getpref('scimPlotPrefs','colorMat'); 
+    load(analysisDataFileName) 
+    idx_img = kmeansData.idx_img; 
+    colorMat = kmeansData.colorMat;  
+    clear kmeansData
     uniqueInd = unique(idx_img);
     for i = 1:length(uniqueInd)
         currIdx = uniqueInd(i);
