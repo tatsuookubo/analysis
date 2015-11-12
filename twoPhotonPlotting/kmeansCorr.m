@@ -1,4 +1,4 @@
-function [idx_img, traces, colorMat] = kmeansCorr(mov,frameRate,k)
+function [idx_img, traces, colorMat] = kmeansCorr(mov,frameRate)
 
 % Clusters pixels in movie into k clusters based on how correlated pixels
 % are over time
@@ -20,8 +20,36 @@ kmat2 = kmat(highStdInd,:);
 %% Perfom kmeans 
 % [IDX] = kmeans( kmat , k ,'distance','correlation');
 % s = silhouette(kmat,IDX,'correlation');
+
+k = 2;
+[tempIdx] = kmeans( kmat2 , k ,'distance','correlation','Replicates',k+1);
+[silh,h] = silhouette(kmat2,tempIdx,'correlation');
+prevClusSilh = mean(silh);
+k =3;
+[tempIdx] = kmeans( kmat2 , k ,'distance','correlation','Replicates',k+1);
+[silh,h] = silhouette(kmat2,tempIdx,'correlation');
+currClusSilh = mean(silh);
+while prevClusSilh < currClusSilh
+    k = k+1; 
+    [tempIdx] = kmeans( kmat2 , k ,'distance','correlation','Replicates',k+1);
+    [silh,h] = silhouette(kmat2,tempIdx,'correlation');
+    prevClusSilh = currClusSilh; 
+    currClusSilh = mean(silh);
+    if k ==5
+        break 
+    end
+end
+k = k-1; 
+[tempIdx] = kmeans( kmat2 , k ,'distance','correlation','Replicates',k+1);
+[silh,h] = silhouette(kmat2,tempIdx,'correlation');
+
 IDX = (k+1).*ones(size(kmat));
-[IDX(highStdInd)] = kmeans( kmat2 , k ,'distance','correlation');
+IDX(highStdInd) = tempIdx;
+
+figure;
+[silh,h] = silhouette(kmat2,tempIdx,'correlation');
+xlabel 'Silhouette Value';
+ylabel 'Cluster';
 
 %% Calculate the within-cluster correlation 
 for i=1:k

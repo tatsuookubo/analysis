@@ -48,7 +48,7 @@ roiPath = char(regexp(pathName,'.*(?=\\block)','match'));
 cd(roiPath)
 blockList = dir('block*');
 if ~exist(analysisDataFileName,'file')
-    [idx_img, traces, colorMat] = kmeansCorr(meanGreenMov,frameRate,k);
+    [idx_img, traces, colorMat] = kmeansCorr(meanGreenMov,frameRate);
 else
     load(analysisDataFileName) 
     idx_img = kmeansData.idx_img; 
