@@ -1,4 +1,4 @@
-function [roiData] = clickyMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,analysisDataFileName,varargin)
+function [analysisData,roiData] = clickyMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,analysisDataFileName,varargin)
 
 % Lets you select ROIS by left clicking to make a shape then right clicking
 % to finish that shape.
@@ -17,16 +17,15 @@ dateNumber = datenum(exptInfo.dNum,'yymmdd');
 dateAsString = datestr(dateNumber,'mm-dd-yy');
 roiNum = trialMeta.roiNum;
 blockNum = trialMeta.blockNum;
-if isfield(trialMeta,'probePos')
-    probePos = trialMeta.probePos;
+if isfield(trialMeta,'probePost')
+    probePos = trialMeta.probePost;
 elseif isfield(trialMeta,'blockDescrip')
     probePos = trialMeta.blockDescrip;
 else
     probePos = ''; 
 end
 roiDescription = trialMeta.roiDescrip;
-sumTitle = {dateAsString;exptInfo.prefixCode;['ExpNum ',num2str(exptInfo.expNum)];['FlyNum ',num2str(exptInfo.flyNum)];...
-    ['RoiNum ',num2str(roiNum)];['BlockNum ',num2str(blockNum)];['probe ',probePos];'';''};
+sumTitle = {['RoiNum ',num2str(roiNum),', ','BlockNum ',num2str(blockNum),', ','probe position: ',probePos];roiDescription};
 saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 
 %% Calculate pre-stim frame times 
@@ -47,13 +46,13 @@ purple = [97 69 168]./255;
 %% See if ROIs already exist
 roiPath = char(regexp(pathName,'.*(?=\\block)','match'));
 cd(roiPath)
-blockList = dir('block*');
 numLoops = 1000;
-if length(blockList) == 1
+if ~exist(analysisDataFileName,'file')
     useOldRois = 'n'; 
 else
-    oldRoi = getpref('scimPlotPrefs','roi');
-    useOldRois = 'y';    
+    load(analysisDataFileName) 
+    oldRoi = analysisData.roi; 
+    clear analysisData
 end
 
 %% Plot ref image for future save plot
@@ -65,7 +64,7 @@ order = get(gca,'ColorOrder');
 subplot(2,2,1);
 imshow(refimg, [], 'InitialMagnification', 'fit')
 hold on
-title(roiDescription)
+title(sumTitle,'Fontsize',20)
 
 
 
@@ -76,8 +75,11 @@ myplot(Stim.timeVec,Stim.stimulus,'Color',purple)
 ylabel('Stimulus (V)')
 set(gca,'xtick',[])
 set(gca,'XColor','white')
-title('Stimulus')
-
+if isfield(Stim,'description')
+    title(Stim.description,'Fontsize',20)
+elseif isfield(trialMeta,'blockDescrip')
+    title(trialMeta.blockDescrip,'Fontsize',20)
+end
 
 %% Get image details
 nframes = size(meanGreenMov, 3);
@@ -155,7 +157,7 @@ for j = 1:numLoops
     end
     colorindex = colorindex+1;
     xlabel('Time (s)')
-    title('Green Channel')
+    title('Green Channel','Fontsize',20)
     
     % Plot the red trace
     h(3) = subplot(2,2,3);
@@ -167,10 +169,10 @@ for j = 1:numLoops
     colorindex = colorindex+1;
     ylabel('dF/F')
     xlabel('Time (s)')
-    title('Red channel')
+    title('Red channel','Fontsize',20)
     
     %% Store the rois
-    roiData.roi{nroi} = [xv, yv];
+    analysisData.roi{nroi} = [xv, yv];
     nroi = nroi + 1;
 end
 
@@ -189,14 +191,14 @@ set(gca,'FontName','Calibri')
 set(0,'DefaultFigureColor','w')
 
 %% Add text description
-h = axes('position',[0,0,1,1],'visible','off','Units','normalized');
-hold(h);
-pos = [0.01,0.6, 0.15 0.7];
-ht = uicontrol('Style','Text','Units','normalized','Position',pos,'Fontsize',20,'HorizontalAlignment','left','FontName','Calibri','BackGroundColor','w');
-
-% Wrap string, also returning a new position for ht
-[outstring,newpos] = textwrap(ht,sumTitle);
-set(ht,'String',outstring,'Position',newpos)
+% h = axes('position',[0,0,1,1],'visible','off','Units','normalized');
+% hold(h);
+% pos = [0.01,0.6, 0.15 0.7];
+% ht = uicontrol('Style','Text','Units','normalized','Position',pos,'Fontsize',20,'HorizontalAlignment','left','FontName','Calibri','BackGroundColor','w');
+% 
+% % Wrap string, also returning a new position for ht
+% [outstring,newpos] = textwrap(ht,sumTitle);
+% set(ht,'String',outstring,'Position',newpos)
 
 %% Save Figure
 if ~isdir(saveFolder)

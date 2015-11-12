@@ -1,4 +1,4 @@
-function [idx_img, traces, colorMat] = kmeansCorr(mov,frameRate)
+function [idx_img, traces, colorMat,k] = kmeansCorr(mov,frameRate)
 
 % Clusters pixels in movie into k clusters based on how correlated pixels
 % are over time

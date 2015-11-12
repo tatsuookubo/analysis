@@ -25,21 +25,21 @@ else
     probePos = ''; 
 end
 roiDescription = trialMeta.roiDescrip;
-sumTitle = {dateAsString;exptInfo.prefixCode;['ExpNum ',num2str(exptInfo.expNum)];['FlyNum ',num2str(exptInfo.flyNum)];...
-    ['RoiNum ',num2str(roiNum)];['BlockNum ',num2str(blockNum)];['probe ',probePos];'';''};
+sumTitle = {['RoiNum ',num2str(roiNum),', ','BlockNum ',num2str(blockNum),', ','probe position: ',probePos];roiDescription};
 saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
+fileStem = char(regexp(fileName,'.*(?=blockNum)','match'));
 
 %% Format figure
 close all
 figure
 setCurrentFigurePosition(1)
-colorindex = 0;
 ColorSet = distinguishable_colors(20,{'b';'w'});
 set(gca, 'ColorOrder', ColorSet);
 order = get(gca,'ColorOrder');
 purple = [97 69 168]./255;
-
-oldRoi = getpref('scimPlotPrefs','roi');
+roiDataFileName = [saveFolder,fileStem,'analysisData.mat'];
+load(roiDataFileName)
+oldRoi = analysisData.roi;
 numRois = length(oldRoi);
 
 numPlots = ceil((numRois+2)/2); 
@@ -51,7 +51,7 @@ meanGreenMov = mean(greenMov,4);
 refimg = mean(meanGreenMov, 3);
 imshow(refimg, [], 'InitialMagnification', 'fit')
 hold on
-title(roiDescription)
+title(sumTitle,'Fontsize',20)
 
 
 %% Plot stimulus
@@ -60,7 +60,11 @@ myplot(Stim.timeVec,Stim.stimulus,'Color',purple)
 ylabel('Stimulus (V)')
 set(gca,'xtick',[])
 set(gca,'XColor','white')
-title('Stimulus')
+if isfield(Stim,'description')
+    title(Stim.description,'Fontsize',20)
+elseif isfield(trialMeta,'blockDescrip')
+    title(trialMeta.blockDescrip,'Fontsize',20)
+end
 
     
 %% Draw the ROI
@@ -79,9 +83,8 @@ end
 % Plot the green trace
 % Calculate pre-stim frame times 
 preStimFrameLog = frameTimes < Stim.startPadDur;
-fileStem = char(regexp(fileName,'.*(?=blockNum)','match'));
 for i = 1:numBlocks 
-    dataFileName = [saveFolder,fileStem,'blockNum',num2str(i,'%03d'),'_rois.mat'];
+    dataFileName = [saveFolder,fileStem,'blockNum',num2str(i,'%03d'),'_traceData.mat'];
     load(dataFileName)
     for j = 1:numRois
         h(2) = subplot(numPlots,2,j+2);
@@ -90,8 +93,8 @@ for i = 1:numBlocks
         myplot(frameTimes,roiData.greenDeltaFMat{j},'Color',currcolor,'Linewidth',2);
         greenTrace = roiData(1).greenDeltaFMat{j};
 %         greenBaselineLegend{j} = num2str(mean(greenTrace(preStimFrameLog)));
+        title(['ROI ',num2str(j)])
     end
-    title(['Block ',num2str(i)])
     if i == 1
         ylabel('dF/F')
     end
@@ -111,14 +114,14 @@ set(gca,'FontName','Calibri')
 set(0,'DefaultFigureColor','w')
 
 %% Add text description
-h = axes('position',[0,0,1,1],'visible','off','Units','normalized');
-hold(h);
-pos = [0.01,0.6, 0.15 0.7];
-ht = uicontrol('Style','Text','Units','normalized','Position',pos,'Fontsize',20,'HorizontalAlignment','left','FontName','Calibri','BackGroundColor','w');
-
-% Wrap string, also returning a new position for ht
-[outstring,newpos] = textwrap(ht,sumTitle);
-set(ht,'String',outstring,'Position',newpos)
+% h = axes('position',[0,0,1,1],'visible','off','Units','normalized');
+% hold(h);
+% pos = [0.01,0.6, 0.15 0.7];
+% ht = uicontrol('Style','Text','Units','normalized','Position',pos,'Fontsize',20,'HorizontalAlignment','left','FontName','Calibri','BackGroundColor','w');
+% 
+% % Wrap string, also returning a new position for ht
+% [outstring,newpos] = textwrap(ht,sumTitle);
+% set(ht,'String',outstring,'Position',newpos)
 
 %% Save Figure
 if ~isdir(saveFolder)

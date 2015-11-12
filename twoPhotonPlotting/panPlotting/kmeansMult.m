@@ -1,4 +1,4 @@
-function [kmeansData] = kmeansMult(greenMov,~, Stim, frameTimes,metaFileName,figSuffix,frameRate,analysisDataFileName,varargin)
+function [analysisData,kmeansData] = kmeansMult(greenMov,~, Stim, frameTimes,metaFileName,figSuffix,frameRate,analysisDataFileName,varargin)
 
 % Lets you select ROIS by left clicking to make a shape then right clicking
 % to finish that shape.
@@ -17,16 +17,17 @@ dateNumber = datenum(exptInfo.dNum,'yymmdd');
 dateAsString = datestr(dateNumber,'mm-dd-yy');
 roiNum = trialMeta.roiNum;
 blockNum = trialMeta.blockNum;
-if isfield(trialMeta,'probePos')
-    probePos = trialMeta.probePos;
+if isfield(trialMeta,'probePost')
+    probePos = trialMeta.probePost;
 elseif isfield(trialMeta,'blockDescrip')
     probePos = trialMeta.blockDescrip;
 else
     probePos = ''; 
 end
 roiDescription = trialMeta.roiDescrip;
-sumTitle = {dateAsString;exptInfo.prefixCode;['ExpNum ',num2str(exptInfo.expNum)];['FlyNum ',num2str(exptInfo.flyNum)];...
-    ['RoiNum ',num2str(roiNum)];['BlockNum ',num2str(blockNum)];['probe ',probePos];'';''};
+% sumTitle = [dateAsString,', ',exptInfo.prefixCode,', ','ExpNum ',num2str(exptInfo.expNum),', ','FlyNum ',num2str(exptInfo.flyNum),...
+%     ', ','RoiNum ',num2str(roiNum),', ','BlockNum ',num2str(blockNum),', ','probe ',probePos];
+sumTitle = ['RoiNum ',num2str(roiNum),', ','BlockNum ',num2str(blockNum),', ','probe position: ',probePos];
 saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 
 %% Get mean movies
@@ -43,12 +44,11 @@ meanGreenMov = 100.*((meanGreenMovCount - baselineMov)./baselineMov);
  
 
 %% Get cluster data 
-k = 6; 
 roiPath = char(regexp(pathName,'.*(?=\\block)','match'));
 cd(roiPath)
 blockList = dir('block*');
 if ~exist(analysisDataFileName,'file')
-    [idx_img, traces, colorMat] = kmeansCorr(meanGreenMov,frameRate);
+    [idx_img, traces, colorMat,k] = kmeansCorr(meanGreenMov,frameRate);
 else
     load(analysisDataFileName) 
     idx_img = kmeansData.idx_img; 
@@ -83,13 +83,14 @@ axis square
 title('Kmeans clusters');
 lutbar
 freezeColors
+title(sumTitle,'Fontsize',20)
 
 %% Plot ref image for future save plot
 subplot(2,2,3);
 refimg = mean(meanGreenMov, 3);
 imshow(refimg, [], 'InitialMagnification', 'fit')
 hold on
-title(roiDescription)
+title(roiDescription,'Fontsize',20)
 
 %% Plot stimulus
 h(1) = subplot(2,2,2);
@@ -97,7 +98,11 @@ myplot(Stim.timeVec,Stim.stimulus,'Color',purple)
 ylabel('Stimulus (V)')
 set(gca,'xtick',[])
 set(gca,'XColor','white')
-title('Stimulus')
+if isfield(Stim,'description')
+    title(Stim.description,'Fontsize',20)
+elseif isfield(trialMeta,'blockDescrip')
+    title(trialMeta.blockDescrip,'Fontsize',20)
+end
 
 %% Plot traces 
 h(2) = subplot(2,2,4);
@@ -106,13 +111,14 @@ for i = 1:size(traces,1)
     myplot(frameTimes, traces(i,:), 'color', colorMat(i,:) , 'DisplayName', ['Cluster: ' num2str(i)],'Linewidth',2);
 end
 xlabel('Time (s)')
-title('Green Channel')
+title('Green Channel','Fontsize',20)
     
 %% Save data 
-kmeansData.idx_img = idx_img; 
-kmeansData.colorMat = colorMat; 
+analysisData.idx_img = idx_img; 
+analysisData.colorMat = colorMat; 
+analysisData.k = k; 
 kmeansData.traces = traces; 
-kmeansData.k = k; 
+kmeansData.probePos = probePos;
 
 %% Figure formatting
 spaceplots
@@ -121,14 +127,14 @@ set(gca,'FontName','Calibri')
 set(0,'DefaultFigureColor','w')
 
 %% Add text description
-h = axes('position',[0,0,1,1],'visible','off','Units','normalized');
-hold(h);
-pos = [0.01,0.6, 0.15 0.7];
-ht = uicontrol('Style','Text','Units','normalized','Position',pos,'Fontsize',20,'HorizontalAlignment','left','FontName','Calibri','BackGroundColor','w');
-
-% Wrap string, also returning a new position for ht
-[outstring,newpos] = textwrap(ht,sumTitle);
-set(ht,'String',outstring,'Position',newpos)
+% h = axes('position',[0,0,1,1],'visible','off','Units','normalized');
+% hold(h);
+% pos = [0.01,0.6, 0.15 0.7];
+% ht = uicontrol('Style','Text','Units','normalized','Position',pos,'Fontsize',20,'HorizontalAlignment','left','FontName','Calibri','BackGroundColor','w');
+% 
+% % Wrap string, also returning a new position for ht
+% [outstring,newpos] = textwrap(ht,sumTitle);
+% set(ht,'String',outstring,'Position',newpos)
 
 %% Save Figure
 if ~isdir(saveFolder)
