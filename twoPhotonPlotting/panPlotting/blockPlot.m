@@ -17,15 +17,8 @@ dateNumber = datenum(exptInfo.dNum,'yymmdd');
 dateAsString = datestr(dateNumber,'mm-dd-yy');
 roiNum = trialMeta.roiNum;
 blockNum = trialMeta.blockNum;
-if isfield(trialMeta,'probePos')
-    probePos = trialMeta.probePos;
-elseif isfield(trialMeta,'blockDescrip')
-    probePos = trialMeta.blockDescrip;
-else
-    probePos = ''; 
-end
 roiDescription = trialMeta.roiDescrip;
-sumTitle = {['RoiNum ',num2str(roiNum),', ','BlockNum ',num2str(blockNum),', ','probe position: ',probePos];roiDescription};
+sumTitle = {['RoiNum ',num2str(roiNum)];roiDescription};
 saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 fileStem = char(regexp(fileName,'.*(?=blockNum)','match'));
 
@@ -101,7 +94,7 @@ for i = 1:numBlocks
     if i == numBlocks 
         xlabel('Time (s)')
     end
-    blockNumStr = cellstr(num2str([1:numBlocks]'));
+    blockNumStr{i,1} = kmeansData.probePos;
     legend(blockNumStr{:},'Location','Best')
     legend boxoff
 end
@@ -131,7 +124,4 @@ fileStem = char(regexp(fileName,'.*(?=_block)','match'));
 saveFileName = [saveFolder,fileStem,'_summaryFig.pdf'];
 figSize = [6 5]; 
 mySave(saveFileName,figSize);
-
-
-
 

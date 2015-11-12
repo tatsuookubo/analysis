@@ -1,4 +1,4 @@
-function [analysisData,roiData] = clickyMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,analysisDataFileName,varargin)
+function [outputRoi,roiData] = clickyMult(greenMov,redMov, Stim, frameTimes,metaFileName,figSuffix,analysisDataFileName,varargin)
 
 % Lets you select ROIS by left clicking to make a shape then right clicking
 % to finish that shape.
@@ -50,6 +50,7 @@ numLoops = 1000;
 if ~exist(analysisDataFileName,'file')
     useOldRois = 'n'; 
 else
+    useOldRois = 'y';
     load(analysisDataFileName) 
     oldRoi = analysisData.roi; 
     clear analysisData
@@ -172,7 +173,7 @@ for j = 1:numLoops
     title('Red channel','Fontsize',20)
     
     %% Store the rois
-    analysisData.roi{nroi} = [xv, yv];
+    outputRoi{nroi} = [xv, yv];
     nroi = nroi + 1;
 end
 

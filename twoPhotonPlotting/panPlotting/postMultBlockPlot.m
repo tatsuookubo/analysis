@@ -20,7 +20,7 @@ trialFiles = dir('*.mat');
 metaFileName = [roiFolder,'\',blockFolders(1).name,'\',trialFiles(1).name];
 [greenMov,~,~,metaFileName,frameTimes] = loadMeanMovie(metaFileName);
 load(metaFileName)
-[greenCorrected,refFrameGreen] = motionCorrection(greenMov);
+[greenCorrected,refFrameGreen] = motionCorrection(greenMov,metaFileName);
 blockPlot(greenCorrected,Stim,frameTimes,metaFileName,figSuffix,numBlocks);
 
 blockPlotKMeans(greenCorrected,Stim,frameTimes,metaFileName,figSuffix,numBlocks);

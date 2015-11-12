@@ -17,9 +17,8 @@ dateNumber = datenum(exptInfo.dNum,'yymmdd');
 dateAsString = datestr(dateNumber,'mm-dd-yy');
 roiNum = trialMeta.roiNum;
 blockNum = trialMeta.blockNum;
-probePos = trialMeta.probePos;
 roiDescription = trialMeta.roiDescrip;
-sumTitle = {['RoiNum ',num2str(roiNum),', ','BlockNum ',num2str(blockNum),', ','probe position: ',probePos];roiDescription};
+sumTitle = {['RoiNum ',num2str(roiNum)];roiDescription};
 saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 
 %% Format figure
@@ -33,15 +32,14 @@ order = get(gca,'ColorOrder');
 purple = [97 69 168]./255;
 
 fileStem = char(regexp(fileName,'.*(?=blockNum)','match'));
-dataFileName = [saveFolder,fileStem,'blockNum',num2str(1,'%03d'),'_rois.mat'];
+dataFileName = [saveFolder,fileStem,'analysisData.mat'];
 load(dataFileName)
-numPlots = ceil((kmeansData.k+3)/2); 
+numPlots = ceil((analysisData.k+3)/2); 
 
 
 %% Plot cluster image
 subplot(numPlots,2,1);
-idx_img = getpref('scimPlotPrefs','idx_img');
-imshow(idx_img,[],'InitialMagnification', 'fit');
+imshow(analysisData.idx_img,[],'InitialMagnification', 'fit');
 colormap jet;
 axis square
 lutbar
@@ -74,7 +72,7 @@ end
 for i = 1:numBlocks 
     dataFileName = [saveFolder,fileStem,'blockNum',num2str(i,'%03d'),'_traceData.mat'];
     load(dataFileName)
-    for k = 1:kmeansData.k
+    for k = 1:analysisData.k
         h(2) = subplot(numPlots,2,k+3);
         hold on
         currcolor = order(i,:);

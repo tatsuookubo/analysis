@@ -7,7 +7,7 @@ end
 
 [pathName, fileName] = fileparts(metaFileName); 
 flyPath = char(regexp(pathName,'.*(?=\\roi)','match'));
-fileStem1 = char(regexp(fileName,'.*(?=roi)','match'));
+fileStem1 = char(regexp(fileName,'.*(?=block)','match'));
 fileStem2 = char(regexp(fileName,'.*(?=trial)','match'));
 
 if ~exist('figSuffix','var')
@@ -33,11 +33,13 @@ redCorrected = motionCorrection(redMov,metaFileName);
 
 %% Perfrom kmeans
 [analysisData,kmeansData] = kmeansMult(greenCorrected,redCorrected, Stim, frameTimes,metaFileName,figSuffix,frameRate,analysisDataFileName);
-[analysisData,roiData] = clickyMult(greenCorrected,redCorrected,Stim,frameTimes,metaFileName,figSuffix,analysisDataFileName);
+[analysisData.roi,roiData] = clickyMult(greenCorrected,redCorrected,Stim,frameTimes,metaFileName,figSuffix,analysisDataFileName);
 
 %% Save ROI and cluster data
 roiData.frameTime = frameTimes; 
-save(analysisDataFileName,'analysisData')
+if ~exist(analysisDataFileName,'file')
+    save(analysisDataFileName,'analysisData')
+end
 
 %% Save trace data 
 save(traceDataFileName,'roiData','kmeansData')

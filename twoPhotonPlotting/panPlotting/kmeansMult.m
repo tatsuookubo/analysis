@@ -51,8 +51,8 @@ if ~exist(analysisDataFileName,'file')
     [idx_img, traces, colorMat,k] = kmeansCorr(meanGreenMov,frameRate);
 else
     load(analysisDataFileName) 
-    idx_img = kmeansData.idx_img; 
-    colorMat = kmeansData.colorMat;  
+    idx_img = analysisData.idx_img; 
+    colorMat = analysisData.colorMat;  
     clear kmeansData
     uniqueInd = unique(idx_img);
     for i = 1:length(uniqueInd)
@@ -114,9 +114,13 @@ xlabel('Time (s)')
 title('Green Channel','Fontsize',20)
     
 %% Save data 
-analysisData.idx_img = idx_img; 
-analysisData.colorMat = colorMat; 
-analysisData.k = k; 
+if ~exist(analysisDataFileName,'file')
+    analysisData.idx_img = idx_img; 
+    analysisData.colorMat = colorMat; 
+    analysisData.k = k; 
+else
+    analysisData = [];
+end
 kmeansData.traces = traces; 
 kmeansData.probePos = probePos;
 
