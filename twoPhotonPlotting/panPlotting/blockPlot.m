@@ -94,10 +94,11 @@ for i = 1:numBlocks
     if i == numBlocks 
         xlabel('Time (s)')
     end
-    blockNumStr{i,1} = kmeansData.probePos;
-    legend(blockNumStr{:},'Location','Best')
-    legend boxoff
+    blockNumStr{1,i} = kmeansData.probePos;
 end
+subplot(numPlots,2,3);
+legend(blockNumStr,'Location','NorthWest')
+legend boxoff
 
 
 %% Figure formatting

@@ -80,8 +80,6 @@ for i = 1:numBlocks
         title(['Cluster ',num2str(k)])
     end
     blockNumStr{i,1} = kmeansData.probePos;
-    legend(blockNumStr{:},'Location','Best')
-    legend boxoff
     if i == 1
         ylabel('Avg F count')
     end
@@ -89,7 +87,9 @@ for i = 1:numBlocks
         xlabel('Time (s)')
     end
 end
-
+subplot(numPlots,2,4)
+legend(blockNumStr,'Location','NorthWest')
+legend boxoff
 
 %% Figure formatting
 spaceplots
