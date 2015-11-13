@@ -70,6 +70,7 @@ close all
  
 clustToPlot = find(avgR>cutoff);
 numRealClusters = length(clustToPlot);
+k = numRealClusters;
 
 %% Plot cluster image 
 % IDX2(1:size(kmat,1),1) = k+1;

@@ -154,7 +154,7 @@ for j = 1:numLoops
     hold on
     p(i) = myplot(frameTimes,greenDeltaF,'Color',currcolor,'Linewidth',2,'DisplayName',num2str(greenPreStimBaseline));
     if numTrials > 1
-        p(i) = myplot(frameTimes,greenDeltaFST,'Color',currcolor,'Linewidth',1,'LineStyle','--');
+        myplot(frameTimes,greenDeltaFST,'Color',currcolor,'Linewidth',1,'LineStyle','--');
     end
     colorindex = colorindex+1;
     xlabel('Time (s)')
@@ -165,7 +165,7 @@ for j = 1:numLoops
     hold on
     q(i) = myplot(frameTimes,redDeltaF,'Color',currcolor,'Linewidth',2,'DisplayName',num2str(redPreStimBaseline));
     if numTrials>1 
-        q(i) = myplot(frameTimes,redDeltaFST,'Color',currcolor,'Linewidth',1,'LineStyle','--');
+        myplot(frameTimes,redDeltaFST,'Color',currcolor,'Linewidth',1,'LineStyle','--');
     end
     colorindex = colorindex+1;
     ylabel('dF/F')
@@ -177,13 +177,13 @@ for j = 1:numLoops
     nroi = nroi + 1;
 end
 
-subplot(2,2,4)
-legend(p(:),'Location','Best')
-legend boxoff
-
-subplot(2,2,3) 
-legend(q(:),'Location','Best')
-legend boxoff
+% subplot(2,2,4)
+% legend(p(:),'Location','Best')
+% legend boxoff
+% 
+% subplot(2,2,3) 
+% legend(q(:),'Location','Best')
+% legend boxoff
 
 %% Figure formatting
 spaceplots
