@@ -76,7 +76,11 @@ for i = 1:numBlocks
         h(2) = subplot(numPlots,2,k+3);
         hold on
         currcolor = order(i,:);
-        myplot(frameTimes, kmeansData.traces(k,:), 'color', currcolor , 'DisplayName', ['Cluster: ' num2str(k)],'Linewidth',2);
+        if length(frameTimes) == length(kmeansData.traces(k,:))
+            myplot(frameTimes, kmeansData.traces(k,:), 'color', currcolor , 'DisplayName', ['Cluster: ' num2str(k)],'Linewidth',2);
+        else
+            return
+        end
         title(['Cluster ',num2str(k)])
     end
     blockNumStr{i,1} = kmeansData.probePos;

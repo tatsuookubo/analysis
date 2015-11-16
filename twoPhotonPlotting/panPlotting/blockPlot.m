@@ -76,25 +76,31 @@ end
 % Plot the green trace
 % Calculate pre-stim frame times 
 preStimFrameLog = frameTimes < Stim.startPadDur;
-for i = 1:numBlocks 
+for i = 1:numBlocks
     dataFileName = [saveFolder,fileStem,'blockNum',num2str(i,'%03d'),'_traceData.mat'];
-    load(dataFileName)
-    for j = 1:numRois
-        h(2) = subplot(numPlots,2,j+2);
-        hold on
-        currcolor = order(i,:);
-        myplot(frameTimes,roiData.greenDeltaFMat{j},'Color',currcolor,'Linewidth',2);
-        greenTrace = roiData(1).greenDeltaFMat{j};
-%         greenBaselineLegend{j} = num2str(mean(greenTrace(preStimFrameLog)));
-        title(['ROI ',num2str(j)])
+    if exist(dataFileName,'file')
+        load(dataFileName)
+        for j = 1:numRois
+            h(2) = subplot(numPlots,2,j+2);
+            hold on
+            currcolor = order(i,:);
+            if length(frameTimes) == length(roiData.greenDeltaFMat{j})
+                myplot(frameTimes,roiData.greenDeltaFMat{j},'Color',currcolor,'Linewidth',2);
+            else
+                return 
+            end
+            greenTrace = roiData(1).greenDeltaFMat{j};
+            %         greenBaselineLegend{j} = num2str(mean(greenTrace(preStimFrameLog)));
+            title(['ROI ',num2str(j)])
+        end
+        if i == 1
+            ylabel('dF/F')
+        end
+        if i == numBlocks
+            xlabel('Time (s)')
+        end
+        blockNumStr{1,i} = kmeansData.probePos;
     end
-    if i == 1
-        ylabel('dF/F')
-    end
-    if i == numBlocks 
-        xlabel('Time (s)')
-    end
-    blockNumStr{1,i} = kmeansData.probePos;
 end
 subplot(numPlots,2,3);
 legend(blockNumStr,'Location','NorthWest')
