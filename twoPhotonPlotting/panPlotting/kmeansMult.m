@@ -42,13 +42,17 @@ numFrames = length(frameTimes);
 baselineMov = repmat(greenPreStimBaseline,[1,1,numFrames]); 
 meanGreenMov = 100.*((meanGreenMovCount - baselineMov)./baselineMov);
  
+%% Calculate stimFrames
+preFrameTimes = find(frameTimes < (Stim.startPadDur + Stim.stimDur));
+postFrameTimes = find(frameTimes > Stim.startPadDur); 
+stimFrames = intersect(preFrameTimes,postFrameTimes);
 
 %% Get cluster data 
 roiPath = char(regexp(pathName,'.*(?=\\block)','match'));
 cd(roiPath)
 blockList = dir('block*');
 if ~exist(analysisDataFileName,'file')
-    [idx_img, traces, colorMat,k] = kmeansCorr(meanGreenMov,frameRate);
+    [idx_img, traces, colorMat,k] = kmeansCorr(meanGreenMov,frameRate,stimFrames);
 else
     load(analysisDataFileName) 
     idx_img = analysisData.idx_img; 
