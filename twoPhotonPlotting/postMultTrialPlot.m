@@ -32,8 +32,11 @@ greenCorrected = motionCorrection(greenMov,metaFileName,frameTimes);
 redCorrected = motionCorrection(redMov,metaFileName); 
 
 %% Perfrom kmeans
-[analysisData,kmeansData] = kmeansMult(greenCorrected,redCorrected, Stim, frameTimes,metaFileName,figSuffix,frameRate,analysisDataFileName);
+% [analysisData,kmeansData] = kmeansMult(greenCorrected,redCorrected, Stim, frameTimes,metaFileName,figSuffix,frameRate,analysisDataFileName);
 [analysisData.roi,roiData] = clickyMult(greenCorrected,redCorrected,Stim,frameTimes,metaFileName,figSuffix,analysisDataFileName);
+
+load(metaFileName) 
+probePos = trialMeta.probePost;
 
 %% Save ROI and cluster data
 roiData.frameTime = frameTimes; 
@@ -42,7 +45,11 @@ if ~exist(analysisDataFileName,'file')
 end
 
 %% Save trace data 
-save(traceDataFileName,'roiData','kmeansData')
+if exist('kmeansData','var')    
+    save(traceDataFileName,'roiData','kmeansData')
+else 
+    save(traceDataFileName,'roiData','probePos')
+end
 
 
 

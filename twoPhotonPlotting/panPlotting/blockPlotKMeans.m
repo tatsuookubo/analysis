@@ -83,7 +83,7 @@ for i = 1:numBlocks
         end
         title(['Cluster ',num2str(k)])
     end
-    blockNumStr{i,1} = kmeansData.probePos;
+    blockNumStr{i,1} = probePos;
     if i == 1
         ylabel('Avg F count')
     end

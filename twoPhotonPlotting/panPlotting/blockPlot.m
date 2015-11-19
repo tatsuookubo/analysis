@@ -99,7 +99,7 @@ for i = 1:numBlocks
         if i == numBlocks
             xlabel('Time (s)')
         end
-        blockNumStr{1,i} = kmeansData.probePos;
+        blockNumStr{1,i} = probePos;
     end
 end
 subplot(numPlots,2,3);

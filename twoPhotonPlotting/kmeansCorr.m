@@ -7,32 +7,32 @@ function [idx_img, traces, colorMat,k] = kmeansCorr(mov,frameRate,stimFrames)
 kmat = reshape(mov, [size(mov,1)*size(mov,2) size(mov,3)] );
 
 %% StimDiff version 
-meanDurStim = mean(kmat(:,stimFrames),2);
-preStimFrames = setxor(1:stimFrames(end),stimFrames);
-meanBeforeStim = mean(kmat(:,preStimFrames),2);
-stimDiff = abs(meanDurStim - meanBeforeStim);
-figure 
-hist(stimDiff,100)
-close all
-numPix = size(kmat,1);
-cutoffInd = round(numPix*0.75);
-cutoff = stimDiff(cutoffInd); 
-highStdInd = find(stimDiff>cutoff); 
-kmat2 = kmat(highStdInd,:); 
-
-%% STD version 
-% stds = std(kmat,0,2);
-% figure
-% hist(stds,100)
-% xlabel('Std')
-% ylabel('Counts')
-% % [cutoff,~] = ginput(1);
+% meanDurStim = mean(kmat(:,stimFrames),2);
+% preStimFrames = setxor(1:stimFrames(end),stimFrames);
+% meanBeforeStim = mean(kmat(:,preStimFrames),2);
+% stimDiff = abs(meanDurStim - meanBeforeStim);
+% figure 
+% hist(stimDiff,100)
 % close all
 % numPix = size(kmat,1);
 % cutoffInd = round(numPix*0.75);
-% cutoff = stds(cutoffInd); 
-% highStdInd = find(stds>cutoff); 
+% cutoff = stimDiff(cutoffInd); 
+% highStdInd = find(stimDiff>cutoff); 
 % kmat2 = kmat(highStdInd,:); 
+
+%% STD version 
+stds = std(kmat,0,2);
+figure
+hist(stds,100)
+xlabel('Std')
+ylabel('Counts')
+[cutoff,~] = ginput(1);
+close all
+% numPix = size(kmat,1);
+% cutoffInd = round(numPix*0.75);
+% cutoff = stds(cutoffInd); 
+highStdInd = find(stds>cutoff); 
+kmat2 = kmat(highStdInd,:); 
 
 %% Perfom kmeans 
 % [IDX] = kmeans( kmat , k ,'distance','correlation');
