@@ -27,7 +27,7 @@ end
 roiDescription = trialMeta.roiDescrip;
 % sumTitle = [dateAsString,', ',exptInfo.prefixCode,', ','ExpNum ',num2str(exptInfo.expNum),', ','FlyNum ',num2str(exptInfo.flyNum),...
 %     ', ','RoiNum ',num2str(roiNum),', ','BlockNum ',num2str(blockNum),', ','probe ',probePos];
-sumTitle = ['RoiNum ',num2str(roiNum),', ','BlockNum ',num2str(blockNum),', ','probe position: ',probePos];
+sumTitle = {[dateAsString,', ',exptInfo.prefixCode,', ','ExpNum ',num2str(exptInfo.expNum),', ','FlyNum ',num2str(exptInfo.flyNum)];['RoiNum ',num2str(roiNum),', ','BlockNum ',num2str(blockNum),', ','probe position: ',probePos]};
 saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 
 %% Get mean movies

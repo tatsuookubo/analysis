@@ -25,7 +25,7 @@ else
     probePos = ''; 
 end
 roiDescription = trialMeta.roiDescrip;
-sumTitle = {['RoiNum ',num2str(roiNum),', ','BlockNum ',num2str(blockNum),', ','probe position: ',probePos];roiDescription};
+sumTitle = {[dateAsString,', ',exptInfo.prefixCode,', ','ExpNum ',num2str(exptInfo.expNum),', ','FlyNum ',num2str(exptInfo.flyNum)];['RoiNum ',num2str(roiNum),', ','BlockNum ',num2str(blockNum),', ','probe position: ',probePos];roiDescription};
 saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 
 %% Calculate pre-stim frame times 

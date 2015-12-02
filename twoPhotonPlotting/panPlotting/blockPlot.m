@@ -18,7 +18,7 @@ dateAsString = datestr(dateNumber,'mm-dd-yy');
 roiNum = trialMeta.roiNum;
 blockNum = trialMeta.blockNum;
 roiDescription = trialMeta.roiDescrip;
-sumTitle = {['RoiNum ',num2str(roiNum)];roiDescription};
+sumTitle = {[dateAsString,', ',exptInfo.prefixCode,', ','ExpNum ',num2str(exptInfo.expNum),', ','FlyNum ',num2str(exptInfo.flyNum)];['RoiNum ',num2str(roiNum)];roiDescription};
 saveFolder = [flyPath,'\Figures\',figSuffix,'\'];
 fileStem = char(regexp(fileName,'.*(?=blockNum)','match'));
 
