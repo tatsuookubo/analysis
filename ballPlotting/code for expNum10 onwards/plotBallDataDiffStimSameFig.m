@@ -140,6 +140,7 @@ for i = 1:length(uniqueStim)
     sph(3) = subplot(7,2,5);
     hold on
     mySimplePlot(groupedData.dsTime{i},meanYVel,'Color',currColor,'Linewidth',2)
+    mySimplePlot(groupedData.dsTime{i},rotYVel,'Color',currColor,'Linewidth',0.5)
     %     mySimplePlot(groupedData.dsTime,meanYVel+stdYVel,'Color',colorSet(i,:),'Linewidth',0.5)
     %     mySimplePlot(groupedData.dsTime,meanYVel-stdYVel,'Color',colorSet(i,:),'Linewidth',0.5)
     set(gca,'XTick',[])

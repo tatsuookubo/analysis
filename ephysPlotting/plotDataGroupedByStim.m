@@ -9,6 +9,9 @@ set(0,'DefaultAxesBox','off')
 
 gray = [192 192 192]./255;
 
+ColorSet = distinguishable_colors(5,'w');
+purple = [97 69 168]./255;
+
 
 %% Load groupedData file
 [~, path, ~, idString] = getDataFileName(exptInfo);
@@ -40,36 +43,42 @@ numStim = length(GroupData);
 
 
 for n = 1:numStim
+    if isempty(GroupData(n).sampTime)
+        continue
+    end
     fig = figure(n);
     setCurrentFigurePosition(2)
+    colormap(ColorSet);
+
     
     h(1) = subplot(4,1,1);
-    plot(GroupData(n).sampTime,GroupData(n).speakerCommand,'Color',gray)
+    plot(GroupData(n).sampTime,GroupData(n).speakerCommand,'Color',purple)
+
     hold on
     ylabel('Voltage (V)')
     set(gca,'Box','off','TickDir','out','XTickLabel','')
-    ylim([-1.1 1.1])
+%     ylim([-1.1 1.1])
     set(gca,'xtick',[])
     set(gca,'XColor','white')
-    if n == 1 
-        t = title(h(1),[dateAsString,', ',exptInfo.prefixCode,', ','ExpNum ',num2str(exptInfo.expNum),', FlyNum ',num2str(exptInfo.flyNum),', CellNum ',num2str(exptInfo.cellNum),', CellExpNum ',num2str(exptInfo.cellExpNum)]);
-        set(t,'Fontsize',20);
-    end
+    t = title(h(1),{[dateAsString,', ',exptInfo.prefixCode,', ','ExpNum ',num2str(exptInfo.expNum),', FlyNum ',num2str(exptInfo.flyNum),', CellNum ',num2str(exptInfo.cellNum),', CellExpNum ',num2str(exptInfo.cellExpNum)];[GroupData(n).description]});
+    set(t,'Fontsize',20);
+
     
     h(2) = subplot(4,1,2);
     hold on
-    plot(GroupData(n).sampTime,GroupData(n).piezoSG,'Color',gray)
+    plot(GroupStim(n).stimTime,GroupData(n).piezoCommand,'Color',gray)
+    plot(GroupData(n).sampTime,GroupData(n).piezoSG,'Color',purple)
     if size(GroupData(n).piezoSG,1)>1
         plot(GroupData(n).sampTime,mean(GroupData(n).piezoSG),'k')
     end
-    plot(GroupStim(n).stimTime,GroupData(n).piezoCommand,'r')
     ylabel('Voltage (V)')
     set(gca,'Box','off','TickDir','out','XTickLabel','')
-    ylim([-0.1 10.1])
+%     ylim([-0.1 10.1])
     set(gca,'xtick',[])
     set(gca,'XColor','white')
     
     h(3) = subplot(4,1,3);
+    set(gca, 'ColorOrder', ColorSet,'NextPlot', 'replacechildren');
 %     plot(GroupData(n).sampTime,GroupData(n).voltage,'Color',gray)
     plot(GroupData(n).sampTime,GroupData(n).voltage)
     hold on
@@ -82,6 +91,7 @@ for n = 1:numStim
     axis tight
     set(gca,'xtick',[])
     set(gca,'XColor','white')
+
     
     h(4) = subplot(4,1,4);
     plot(GroupData(n).sampTime,GroupData(n).current,'Color',gray)
@@ -108,8 +118,8 @@ for n = 1:numStim
     mySave(saveFileName{n});      
     close all
 end
-
-figFilename = [saveFolder,idString,'.pdf'];
-myAppendPdfs(saveFileName,figFilename);
+% 
+% figFilename = [saveFolder,idString,'.pdf'];
+% myAppendPdfs(saveFileName,figFilename);
 
 end

@@ -1,10 +1,7 @@
 function plotAllExpts(prefixCode,expNum,flyNum)
 
-% prefixCode = '26B07';
-% expNum = 1; 
-% flyNum = 2; 
-% i = 1;
-% 
+% Merges trials and plots data grouped by stimulus for each cell and cell
+% experiments for a fly
 
 exptInfo.prefixCode     = prefixCode;
 exptInfo.expNum         = expNum;
@@ -30,10 +27,8 @@ for i = 1:length(cellNumList)
         numTrials = length(fileNames);
         if numTrials == 0
         else 
-            groupDataFile = dir('*groupedData*.mat');
-%             if length(groupDataFile) ~= 1
-                mergeTrials(exptInfo)
-%             end
+            mergeTrials(exptInfo)
+            plotZeroCurrentTrial(exptInfo)
             plotDataGroupedByStim(exptInfo)
         end
     end

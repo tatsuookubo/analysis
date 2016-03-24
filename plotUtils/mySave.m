@@ -1,8 +1,12 @@
-function mySave(filename,figSize)
+function mySave(filename,figSize,varargin)
 
 % Save settings 
 % set(gcf, 'PaperType', 'usletter');
 % orient landscape
+
+if ~exist('figSize','var')
+    figSize = [5 3];
+end
 
 % Save pdf 
 export_fig(filename,'-pdf','-q50')
@@ -14,7 +18,7 @@ set(gcf,'PaperUnits','inches','PaperPositionMode','manual','PaperPosition',[0 0,
 
 fileStem = char(regexp(filename,'.*(?=.pdf)','match'));
 imageFilename = [fileStem,'_image.eps'];
-print(gcf,'-depsc',imageFilename,'-r300','-painters','-cmyk')
+print(gcf,'-depsc',imageFilename,'-r50','-painters','-cmyk')
 
 fileStem = char(regexp(filename,'.*(?=.pdf)','match'));
 imageFilename = [fileStem,'_meta_image.emf'];
