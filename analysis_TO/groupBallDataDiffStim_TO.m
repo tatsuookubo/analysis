@@ -52,7 +52,7 @@ for i = 1:length(dirCont) % for all the trials in that directory
     clear procData temp
 end
 
-Data = groupedData;
+Data = groupedData; % save under different name to avoid being recognized as an object
 fileName = [path,fileNamePreamble,'groupedData.mat'];
 %save(fileName, 'groupedData'); % save the groupedData structure
 save(fileName, 'Data'); % save the groupedData structure
